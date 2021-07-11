@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Crock_TorsoMask
+  m_Mask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: Armature
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root
+    m_Weight: 0
+  - m_Path: Armature/ctrl_root/def_hips
+    m_Weight: 0
+  - m_Path: Armature/ctrl_root/def_hips/def_hip.L
+    m_Weight: 0
+  - m_Path: Armature/ctrl_root/def_hips/def_hip.L/def_knee.L
+    m_Weight: 0
+  - m_Path: Armature/ctrl_root/def_hips/def_hip.L/def_knee.L/def_foot.L.001
+    m_Weight: 0
+  - m_Path: Armature/ctrl_root/def_hips/def_hip.L/def_knee.L/def_foot.L.001/def_foot.L.002
+    m_Weight: 0
+  - m_Path: Armature/ctrl_root/def_hips/def_hip.R
+    m_Weight: 0
+  - m_Path: Armature/ctrl_root/def_hips/def_hip.R/def_knee.R
+    m_Weight: 0
+  - m_Path: Armature/ctrl_root/def_hips/def_hip.R/def_knee.R/def_foot.R.001
+    m_Weight: 0
+  - m_Path: Armature/ctrl_root/def_hips/def_hip.R/def_knee.R/def_foot.R.001/def_foot.R.002
+    m_Weight: 0
+  - m_Path: Armature/ctrl_root/def_hips/def_tail.001
+    m_Weight: 0
+  - m_Path: Armature/ctrl_root/def_hips/def_tail.001/def_tail.002
+    m_Weight: 0
+  - m_Path: Armature/ctrl_root/def_hips/def_waist
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_belly
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L/def_shoulder.L
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L/def_shoulder.L/def_bicep.L
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L/def_shoulder.L/def_elbow.L
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L/def_shoulder.L/def_elbow.L/def_hand.L
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L/def_shoulder.L/def_elbow.L/def_hand.L/def_big_finger
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L/def_shoulder.L/def_elbow.L/def_hand.L/def_fingers.L.001
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L/def_shoulder.L/def_elbow.L/def_hand.L/def_fingers.L.001/def_fingers.L.002
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L/def_shoulder.L/def_elbow.L/def_hand.L/def_thumb.L.001
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L/def_shoulder.L/def_elbow.L/def_hand.L/def_thumb.L.001/def_thumb.L.002
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.R
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.R/def_shoulder.R
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.R/def_shoulder.R/def_bicep.R
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.R/def_shoulder.R/def_elbow.R
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.R/def_shoulder.R/def_elbow.R/def_hand.R
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.R/def_shoulder.R/def_elbow.R/def_hand.R/def_fingers.R.001
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.R/def_shoulder.R/def_elbow.R/def_hand.R/def_fingers.R.001/def_fingers.R.002
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.R/def_shoulder.R/def_elbow.R/def_hand.R/def_thumb.R.001
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.R/def_shoulder.R/def_elbow.R/def_hand.R/def_thumb.R.001/def_thumb.R.002
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_head
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_head/def_chin.001
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_head/def_chin.001/def_chin.002
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_head/def_eyebrow_inner.L
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_head/def_eyebrow_inner.R
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_head/def_eyebrow_outer.L
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_head/def_eyebrow_outer.R
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_head/def_snout.001
+    m_Weight: 1
+  - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_head/def_snout.001/def_snout.002
+    m_Weight: 1
+  - m_Path: Mesh
+    m_Weight: 0
