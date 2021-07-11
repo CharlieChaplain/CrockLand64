@@ -70,7 +70,7 @@ public class FootstepsExt : Footsteps
                 }
                 else
                 {
-                    Debug.Log("no groundinfo");
+                    //Debug.Log("no groundinfo");
                 }//end component check
             }//end raycast
         }//end if/else

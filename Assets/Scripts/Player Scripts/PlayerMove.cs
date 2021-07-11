@@ -75,6 +75,8 @@ public class PlayerMove : MonoBehaviour
 
     Vector3 hitInfoPoint;
 
+    const float ROOT2 = 1.414f;
+
     private void Start()
     {
         functionalMaxSpeed = maxSpeed;
@@ -170,13 +172,47 @@ public class PlayerMove : MonoBehaviour
 
     private void LateUpdate()
     {
-        if(PlayerManager.Instance.currentState != PlayerManager.PlayerState.swimming)
-        {
-            bool normalMove = PlayerManager.Instance.currentState == PlayerManager.PlayerState.normal;
-            if (grounded && normalMove && speed > maxSpeed / 2f)
-                TwistWaist();
+        //twists crocks waist if he's turning. In late update because that happens after animations
+        bool normalMove = PlayerManager.Instance.currentState == PlayerManager.PlayerState.normal;
+        if (grounded && normalMove && speed > maxSpeed / 2f)
+            TwistWaist();
 
-            //tries to fix unity's garbo default character controller when dealing with edges. Still needs some work
+        FixEdgeCollision();
+
+        //last thing in the frame is to move the character
+        controller.Move(velocity * Time.deltaTime);
+    }
+
+    void FixEdgeCollision()
+    {
+        //tries to fix unity's garbo default character controller when dealing with edges.
+
+        //does not apply if crock is currently grounded or swimming or if he is moving upwards (jumping up usually)
+        if (grounded || PlayerManager.Instance.currentState == PlayerManager.PlayerState.swimming || velocity.y > 0)
+            return;
+
+        Vector3 sphereCastOrigin = transform.position + controller.center;
+        float sphereCastRadius = controller.radius + controller.skinWidth;
+        float sphereCastLength = controller.center.magnitude + groundCheckRadius;
+        Ray sphereCastRay = new Ray(sphereCastOrigin, Vector3.down);
+        RaycastHit hit;
+
+        //checks if crock is touching ground but isn't grounded. RaycastHit gives more info than a simple sphere check
+        if (Physics.SphereCast(sphereCastRay, sphereCastRadius, out hit, sphereCastLength, groundMask))
+        {
+            Vector3 pushDir = hit.normal + (ROOT2 * Vector3.down);
+            controller.Move(pushDir * edgeCorrectionSpeed * Time.deltaTime);
+        }
+    }
+
+    void FixEdgeCollision2()
+    {
+        //tries to fix unity's garbo default character controller when dealing with edges. Still needs some work
+        if (PlayerManager.Instance.currentState != PlayerManager.PlayerState.swimming)
+        {
+            
+
+            
             Vector3 sphereCenter = transform.position + (Vector3.up * (controller.radius - controller.skinWidth));
             float sphereRadius = controller.radius - controller.skinWidth + 0.1f;
             //Collider[] cols = Physics.OverlapSphere(sphereCenter, sphereRadius, groundMask);
@@ -198,7 +234,7 @@ public class PlayerMove : MonoBehaviour
                     hitInfoPoint = raycastStart;
 
                     RaycastHit hit;
-                    if(Physics.Raycast(raycastStart, Vector3.down, out hit, 5f, groundMask))
+                    if (Physics.Raycast(raycastStart, Vector3.down, out hit, 5f, groundMask))
                     {
                         if (hit.transform.gameObject.CompareTag("Wall"))
                         {
@@ -227,9 +263,6 @@ public class PlayerMove : MonoBehaviour
                 }
             }
         }
-
-        //last thing in the frame is to move the character
-        controller.Move(velocity * Time.deltaTime);
     }
 
     void Move(float _maxSpeed, float _turnSpeed, bool canMove)

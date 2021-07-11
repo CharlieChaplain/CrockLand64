@@ -360,9 +360,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_AssetsPPU: 100
-  m_RefResolutionX: 320
+  m_RefResolutionX: 426
   m_RefResolutionY: 240
-  m_UpscaleRT: 0
+  m_UpscaleRT: 1
   m_PixelSnapping: 0
   m_CropFrameX: 0
   m_CropFrameY: 0
@@ -24027,12 +24027,12 @@ PrefabInstance:
     - target: {fileID: 8959159777315342825, guid: 178f3413f93c14e4f8b10e6a5687ae6f,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.08624953
+      value: 0.08624954
       objectReference: {fileID: 0}
     - target: {fileID: 8959159777315342825, guid: 178f3413f93c14e4f8b10e6a5687ae6f,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0029819312
+      value: -0.0029819314
       objectReference: {fileID: 0}
     - target: {fileID: 8959159777315342825, guid: 178f3413f93c14e4f8b10e6a5687ae6f,
         type: 3}
@@ -24062,7 +24062,7 @@ PrefabInstance:
     - target: {fileID: 8959159778814336162, guid: 178f3413f93c14e4f8b10e6a5687ae6f,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.0017667849
+      value: -0.0017667859
       objectReference: {fileID: 0}
     - target: {fileID: 8959159778814336162, guid: 178f3413f93c14e4f8b10e6a5687ae6f,
         type: 3}
@@ -24072,7 +24072,7 @@ PrefabInstance:
     - target: {fileID: 8959159778814336162, guid: 178f3413f93c14e4f8b10e6a5687ae6f,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.00015304642
+      value: 0.00015304651
       objectReference: {fileID: 0}
     - target: {fileID: 8959159778814336162, guid: 178f3413f93c14e4f8b10e6a5687ae6f,
         type: 3}
@@ -25031,7 +25031,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 32
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 320, y: 240}
+  m_ReferenceResolution: {x: 426, y: 240}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -33770,6 +33770,11 @@ PrefabInstance:
       propertyPath: attackEffects.Array.data[1]
       value: 
       objectReference: {fileID: 1878575665}
+    - target: {fileID: 149658813113061932, guid: 842296e190d9d984aa25009283b55f94,
+        type: 3}
+      propertyPath: m_SlopeLimit
+      value: 50
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 842296e190d9d984aa25009283b55f94, type: 3}
 --- !u!1 &1820978893
@@ -40604,6 +40609,11 @@ PrefabInstance:
         type: 3}
       propertyPath: orthographic size
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8176338842959632483, guid: 81e114ce36bde3c4fab8a665c7d9232c,
+        type: 3}
+      propertyPath: m_RefResolutionX
+      value: 426
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 81e114ce36bde3c4fab8a665c7d9232c, type: 3}
