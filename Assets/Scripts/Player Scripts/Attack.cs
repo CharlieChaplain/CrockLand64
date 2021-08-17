@@ -5,7 +5,7 @@ using UnityEngine;
 public class Attack : MonoBehaviour
 {
     public bool canAttack = true;
-    bool attackDone = true;
+    public bool attackDone = true;
     bool buttonUp = true;
 
     PlayerMove playerMove;
@@ -254,7 +254,8 @@ public class Attack : MonoBehaviour
     {
         if (matchTargetPos)
         {
-            carryTarget.transform.position = carrySocket.position + (transform.right * -0.255f);
+            //carryTarget.transform.position = carrySocket.position + (transform.right * -0.255f);
+            carryTarget.transform.position = carrySocket.position + (transform.up * .1f);
             carryTarget.transform.forward = -transform.forward;
         }
     }
@@ -262,6 +263,19 @@ public class Attack : MonoBehaviour
     public GameObject GetCarryTarget()
     {
         return carryTarget;
+    }
+
+    public void ResetCarryTarget()
+    {
+        matchTargetPos = false;
+        carryTarget.GetComponent<Enemy>().SetCarried(false);
+        carryTarget.GetComponent<Enemy>().SetThrown(true);
+        carryTarget = null;
+        throwing = false;
+        carrying = false;
+        StopAttack();
+
+        PlayerManager.Instance.currentState = PlayerManager.PlayerState.normal;
     }
 
     IEnumerator AirRollCoroutine()
@@ -288,6 +302,7 @@ public class Attack : MonoBehaviour
 
         PlayerManager.Instance.canMove = false;
 
+        playerMove.SetSpeed(0);
         playerMove.maxSpeed = 0;
         playerMove.turnSpeed = 100f;
         playerMove.SetVelocity(Vector3.up * 2f);
@@ -315,15 +330,15 @@ public class Attack : MonoBehaviour
         GetComponentInChildren<CrockAnimListener>().HurtboxOff("GroundPoundCollider");
 
         Vector3 bounceVelocity = playerMove.controller.velocity;
-        bounceVelocity.y = 5f;
+        //bounceVelocity.y = -bounceVelocity.y * 0.5f;
+        bounceVelocity.y = 10f;
         playerMove.SetVelocity(bounceVelocity);
+        attackEffects[1].SetActive(false);
 
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(0.2f);
 
         PlayerManager.Instance.canMove = true;
 
         StopAttack();
-
-        attackEffects[1].SetActive(false);
     }
 }

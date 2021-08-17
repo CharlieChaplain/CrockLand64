@@ -7,6 +7,8 @@ TagManager:
   - SlippySlope
   - Wall
   - HurtBox
+  - LadderTop
+  - LadderBot
   layers:
   - Default
   - TransparentFX
@@ -20,8 +22,8 @@ TagManager:
   - Player
   - Enemy
   - Uncollidables
-  - 
-  - 
+  - WealthGroundCollider
+  - Ladder
   - 
   - 
   - 

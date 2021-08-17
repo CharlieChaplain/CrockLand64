@@ -6,10 +6,10 @@ using UnityEngine;
 public class PlaySound : ScriptableObject
 {
     public AudioClip sound;
-    GameObject soundObj;
+    protected GameObject soundObj;
 
     /// <param name="position">The position at which the sound is played</param>
-    public void Play(Vector3 position)
+    public virtual void Play(Vector3 position)
     {
         soundObj = new GameObject();
         soundObj.transform.position = position;

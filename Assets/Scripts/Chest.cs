@@ -23,7 +23,7 @@ public class Chest : MonoBehaviour
 
     void Open()
     {
-        GetComponent<Cutscene_UnlockChest>().PlayCutscene();
+        GetComponent<Cutscene>().PlayCutscene();
         closedCollision.enabled = false;
         openCollision.enabled = true;
 

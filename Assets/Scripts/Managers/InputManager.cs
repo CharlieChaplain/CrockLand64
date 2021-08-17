@@ -38,6 +38,14 @@ public class InputManager : MonoBehaviour
         {
             keyboardInput = true;
         }
+
+        if (keyboardInput && !PlayerManager.Instance.paused)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        } else if (keyboardInput)
+        {
+            Cursor.lockState = CursorLockMode.None;
+        }
     }
 
     bool CheckController()

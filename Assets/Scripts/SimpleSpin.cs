@@ -8,6 +8,6 @@ public class SimpleSpin : MonoBehaviour
 
     void Update()
     {
-        transform.Rotate(spinSpeed * Time.deltaTime);
+        transform.Rotate(spinSpeed * Time.unscaledDeltaTime);
     }
 }

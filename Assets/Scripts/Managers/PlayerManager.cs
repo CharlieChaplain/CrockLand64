@@ -15,6 +15,8 @@ public class PlayerManager : MonoBehaviour
 
     public PlaySound currentHitSound; //the current sound to be played when crock hits something
 
+    public bool paused;
+
     public enum PlayerState
     {
         normal,
@@ -22,7 +24,9 @@ public class PlayerManager : MonoBehaviour
         crouching,
         sliding,
         swimming,
-        carrying
+        carrying,
+        ladder,
+        hurt
     }
 
     public PlayerState currentState;
@@ -65,7 +69,14 @@ public class PlayerManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        //TAKE THIS OUT AFTER TESTING
+        if (Input.GetKey(KeyCode.LeftBracket))
+        {
+            Time.timeScale = 6f;
+        } else if (Input.GetKey(KeyCode.RightBracket))
+        {
+            Time.timeScale = 1f;
+        }
     }
 
     public void AddWealth(int amount)

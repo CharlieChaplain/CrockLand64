@@ -6,7 +6,7 @@ AvatarMask:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Crock_TorsoMask
+  m_Name: M_CrockArm
   m_Mask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
   m_Elements:
   - m_Path: 
@@ -38,33 +38,33 @@ AvatarMask:
   - m_Path: Armature/ctrl_root/def_hips/def_tail.001/def_tail.002
     m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_belly
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L/def_shoulder.L
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L/def_shoulder.L/def_bicep.L
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L/def_shoulder.L/def_elbow.L
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L/def_shoulder.L/def_elbow.L/def_hand.L
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L/def_shoulder.L/def_elbow.L/def_hand.L/def_big_finger
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L/def_shoulder.L/def_elbow.L/def_hand.L/def_fingers.L.001
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L/def_shoulder.L/def_elbow.L/def_hand.L/def_fingers.L.001/def_fingers.L.002
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L/def_shoulder.L/def_elbow.L/def_hand.L/def_thumb.L.001
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.L/def_shoulder.L/def_elbow.L/def_hand.L/def_thumb.L.001/def_thumb.L.002
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.R
     m_Weight: 1
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.R/def_shoulder.R
@@ -84,22 +84,22 @@ AvatarMask:
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_clavicle.R/def_shoulder.R/def_elbow.R/def_hand.R/def_thumb.R.001/def_thumb.R.002
     m_Weight: 1
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_head
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_head/def_chin.001
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_head/def_chin.001/def_chin.002
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_head/def_eyebrow_inner.L
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_head/def_eyebrow_inner.R
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_head/def_eyebrow_outer.L
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_head/def_eyebrow_outer.R
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_head/def_snout.001
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Armature/ctrl_root/def_hips/def_waist/def_torso/def_shoulders/def_head/def_snout.001/def_snout.002
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Mesh
     m_Weight: 0

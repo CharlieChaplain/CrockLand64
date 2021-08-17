@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 149658813113061921}
   - component: {fileID: 1046041964}
   - component: {fileID: 8387100518661153051}
+  - component: {fileID: 7635248011272351824}
   m_Layer: 9
   m_Name: Crock
   m_TagString: Player
@@ -125,6 +126,7 @@ MonoBehaviour:
   waist: {fileID: 7844766964293748435}
   edgeCorrectionSpeed: 2
   noSlipDistance: 0.1
+  velDampenMult: 0
   slopeForceMultiplier: 20
   slopeRayMultiplier: 1.5
   slideSpeed: 0.2
@@ -191,6 +193,13 @@ MonoBehaviour:
   accel: 0.5
   underwaterSwoosh: {fileID: 11400000, guid: 03a165165772de844b1e5dd6cc180e0c, type: 2}
   enterWater: {fileID: 11400000, guid: 9bb79634b8f016544b2fa2915ff07944, type: 2}
+  surface: {fileID: 0}
+  bubbleCollider: {fileID: 0}
+  partBubbles: {fileID: 0}
+  partBubblesBurst: {fileID: 0}
+  partWake: {fileID: 0}
+  partDrips: {fileID: 0}
+  sploosh: {fileID: 0}
 --- !u!114 &8387100518661153051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,6 +223,21 @@ MonoBehaviour:
   throwing: 0
   matchTargetPos: 0
   carrySocket: {fileID: 440935754788716719}
+  attackEffects: []
+--- !u!114 &7635248011272351824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 149658813113061934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7eafddb8d9f209a41b8cc84cf5ec6e9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  anim: {fileID: 0}
+  mesh: {fileID: 0}
 --- !u!1 &149658813620829030
 GameObject:
   m_ObjectHideFlags: 0
@@ -722,6 +746,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3f851b39117b944c9f61f424b873d3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  soundObjectNames: []
+  soundObjects: []
 --- !u!1001 &149658812073713231
 PrefabInstance:
   m_ObjectHideFlags: 0

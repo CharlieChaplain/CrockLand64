@@ -10,7 +10,10 @@ public class Idle : MonoBehaviour
 
     private float idleTimer;
     private bool idling = false;
+    private bool sleeping = false;
     private int prevIdle = -1;
+
+    private int idleCount = 0; //the number of times idles have been triggered. This determines sleeping
 
     // Start is called before the first frame update
     void Start()
@@ -22,11 +25,20 @@ public class Idle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!idling)
+        if(!idling && idleCount <= 3)
             idleTimer -= Time.deltaTime;
         if(idleTimer <= 0 && !idling)
         {
-            PlayIdle();
+            if(idleCount < 3)
+                PlayIdle();
+            else if(!sleeping)
+            {
+                sleeping = true;
+                idleCount++;
+                anim.SetInteger("IdleCounter", idleCount);
+
+                GetComponent<ChangeModel>().ChangeModelTo(1);
+            }
         }
     }
 
@@ -45,12 +57,31 @@ public class Idle : MonoBehaviour
 
         anim.SetInteger("IdleNumber", idleNumber);
         anim.SetTrigger("Idle");
+
+        idleCount++;
+        anim.SetInteger("IdleCounter", idleCount);
     }
 
+    //used on its own when the idle is stopped only by the animation finishing
     public void StopIdle()
     {
         idling = false;
+        sleeping = false;
         anim.ResetTrigger("Idle");
         idleTimer = startingIdleTimer;
+        GetComponent<ChangeModel>().ChangeModelTo(0);
+    }
+
+    //used only when player starts moving in some way
+    public void StopIdleFull()
+    {
+        idleCount = 0;
+        StopIdle();
+    }
+
+    public void Increment()
+    {
+        idleCount++;
+        anim.SetInteger("IdleCounter", idleCount);
     }
 }

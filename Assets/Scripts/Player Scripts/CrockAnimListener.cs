@@ -122,4 +122,9 @@ public class CrockAnimListener : MonoBehaviour
         if (evt.animatorClipInfo.weight > 0.5)
             transform.root.GetComponent<Footsteps>().PlayFootstep(1);
     }
+
+    public void IncrementIdleCounter()
+    {
+        transform.root.GetComponent<Idle>().Increment();
+    }
 }

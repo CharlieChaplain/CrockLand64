@@ -37,7 +37,7 @@ public class Cutscene_UnlockChest : Cutscene
     }
     public override void PlayCutscene()
     {
-        //Debug.Log("play unlock chest cutscene");
+        Pause.activatePause = false;
 
         GameObject player = PlayerManager.Instance.player;
         GameObject key = player.GetComponent<Attack>().GetCarryTarget();
@@ -69,6 +69,7 @@ public class Cutscene_UnlockChest : Cutscene
     {
         IrisWipe.Instance.WipeOut();
         yield return new WaitForSeconds(3f);
+        // reload scene is a placeholder. Otherwise it'd load the Hub level
         SceneDirector.ReloadScene();
     }
 }

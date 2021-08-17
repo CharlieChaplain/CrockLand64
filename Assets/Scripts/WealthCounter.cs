@@ -8,8 +8,8 @@ public class WealthCounter : MonoBehaviour
     public List<TextMeshProUGUI> counterText;
     Animator anim;
 
-    bool isVisible = false;
-    float visibleTimer = 0;
+    public bool isVisible = false;
+    public float visibleTimer = 0;
 
     int wealthToAdd;
 

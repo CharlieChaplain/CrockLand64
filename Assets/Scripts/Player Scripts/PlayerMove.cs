@@ -73,7 +73,6 @@ public class PlayerMove : MonoBehaviour
     public float waterCheckRadius;
     public LayerMask waterMask;
 
-    Vector3 hitInfoPoint;
 
     const float ROOT2 = 1.414f;
 
@@ -101,7 +100,8 @@ public class PlayerMove : MonoBehaviour
         switch (PlayerManager.Instance.currentState)
         {
             case PlayerManager.PlayerState.normal:
-                Move(maxSpeed, turnSpeed, canMove);
+                if(canMove)
+                    Move(maxSpeed, turnSpeed, canMove);
                 break;
             case PlayerManager.PlayerState.charging:
                 GetComponent<Charge>().ChargeMove(cam);
@@ -119,6 +119,13 @@ public class PlayerMove : MonoBehaviour
             case PlayerManager.PlayerState.carrying:
                 Move(maxSpeed, turnSpeed, canMove);
                 break;
+            case PlayerManager.PlayerState.ladder:
+                velocity = Vector3.zero;
+                GetComponent<LadderClimb>().LadderMove();
+                break;
+            case PlayerManager.PlayerState.hurt:
+                HurtMove();
+                break;
             default:
                 break;
 
@@ -128,7 +135,8 @@ public class PlayerMove : MonoBehaviour
             Jump();
         }
 
-        if(PlayerManager.Instance.currentState != PlayerManager.PlayerState.swimming)
+        if(PlayerManager.Instance.currentState != PlayerManager.PlayerState.swimming &&
+           PlayerManager.Instance.currentState != PlayerManager.PlayerState.ladder)
         {
             GetComponent<Attack>().AttackLogic();
 
@@ -143,7 +151,7 @@ public class PlayerMove : MonoBehaviour
             ApplyGravity();
 
             if (speed > 0)
-                GetComponent<Idle>().StopIdle();
+                GetComponent<Idle>().StopIdleFull();
 
 
             slidingLastFrame = sliding;
@@ -156,7 +164,7 @@ public class PlayerMove : MonoBehaviour
     {
         if (other.transform.gameObject.layer == 10) //10 = enemy
         {
-            //if you land on an enemy you get bounced. Doesn't work as of now
+            //if you land on an enemy you get bounced. Doesn't work perfectly as of now
             if (!grounded)
             {
                 Debug.Log("boing");
@@ -177,7 +185,9 @@ public class PlayerMove : MonoBehaviour
         if (grounded && normalMove && speed > maxSpeed / 2f)
             TwistWaist();
 
-        FixEdgeCollision();
+        if(PlayerManager.Instance.currentState != PlayerManager.PlayerState.ladder &&
+           PlayerManager.Instance.currentState != PlayerManager.PlayerState.swimming)
+            FixEdgeCollision();
 
         //last thing in the frame is to move the character
         controller.Move(velocity * Time.deltaTime);
@@ -202,66 +212,6 @@ public class PlayerMove : MonoBehaviour
         {
             Vector3 pushDir = hit.normal + (ROOT2 * Vector3.down);
             controller.Move(pushDir * edgeCorrectionSpeed * Time.deltaTime);
-        }
-    }
-
-    void FixEdgeCollision2()
-    {
-        //tries to fix unity's garbo default character controller when dealing with edges. Still needs some work
-        if (PlayerManager.Instance.currentState != PlayerManager.PlayerState.swimming)
-        {
-            
-
-            
-            Vector3 sphereCenter = transform.position + (Vector3.up * (controller.radius - controller.skinWidth));
-            float sphereRadius = controller.radius - controller.skinWidth + 0.1f;
-            //Collider[] cols = Physics.OverlapSphere(sphereCenter, sphereRadius, groundMask);
-            Collider[] cols = Physics.OverlapSphere(sphereCenter, sphereRadius);
-            if (!grounded && cols.Length != 0)
-            {
-                // THIS ASSUMES THE FIRST HIT COLLIDER IS THE ONE YOU WANT TO SLIDE OFF OF
-                Vector3 relativeHitPoint = transform.position - cols[0].ClosestPoint(sphereCenter);
-
-                hitInfoPoint = cols[0].ClosestPoint(sphereCenter);
-
-                if (relativeHitPoint.magnitude > noSlipDistance)
-                {
-                    Vector3 edgeFallMovement = relativeHitPoint.normalized;
-                    edgeFallMovement.y = 0;
-                    Vector3 raycastStart = transform.position + (edgeFallMovement * 1f);
-                    Vector3 newPos = edgeFallMovement;
-
-                    hitInfoPoint = raycastStart;
-
-                    RaycastHit hit;
-                    if (Physics.Raycast(raycastStart, Vector3.down, out hit, 5f, groundMask))
-                    {
-                        if (hit.transform.gameObject.CompareTag("Wall"))
-                        {
-                            newPos = hit.point - transform.position;
-                        }
-                    }
-
-                    controller.Move(newPos * edgeCorrectionSpeed * Time.deltaTime);
-
-
-                    if (cols[0].transform.gameObject.CompareTag("Wall"))
-                    {
-                        controller.Move(newPos * edgeCorrectionSpeed * Time.deltaTime);
-
-                        //calcs dot product between edgefallmove and velocity, if velocity is up against the wall, it's stronger
-                        //float dotProduct = Mathf.Max(-Vector3.Dot(velocity.normalized, edgeFallMovement), 0);
-                        float dotProduct = Mathf.Max(-Vector3.Dot(inputVector, edgeFallMovement), 0);
-
-                        Vector3 test = velocity;
-                        test.y = 0;
-
-                        Vector3 dampenVelocity = edgeFallMovement * dotProduct * inputVector.magnitude * velDampenMult;
-
-                        //velocity += (dampenVelocity);
-                    }
-                }
-            }
         }
     }
 
@@ -339,6 +289,16 @@ public class PlayerMove : MonoBehaviour
         } */
     }
 
+    void HurtMove()
+    {
+        if (grounded && velocity.y < 0)
+        {
+            velocity.y = -velocity.y * 0.8f;
+            velocity.x *= 0.7f;
+            velocity.z *= 0.7f;
+        }
+    }
+
     public void SlopeCorrection()
     {
         //checks if on slope and moving, and if so, pushes the character further down to prevent bouncing when moving down a slope
@@ -365,7 +325,9 @@ public class PlayerMove : MonoBehaviour
 
     void ApplyGravity()
     {
-        if (grounded && ungroundTimerUp && PlayerManager.Instance.currentState != PlayerManager.PlayerState.sliding)
+        if (grounded && ungroundTimerUp && GetComponent<Attack>().attackDone
+                                        && PlayerManager.Instance.currentState != PlayerManager.PlayerState.sliding
+                                        && PlayerManager.Instance.currentState != PlayerManager.PlayerState.hurt)
             velocity.y = 0;
 
         float finalGravMult = gravityMult;
@@ -401,6 +363,12 @@ public class PlayerMove : MonoBehaviour
         if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.swimming && swim.IsPaddling())
             grounded = true;
 
+        //if on a ladder, crock is always grounded
+        if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.ladder)
+        {
+            grounded = true;
+        }
+
         //animation variable connection
         anim.SetBool("Grounded", grounded);
 
@@ -423,10 +391,6 @@ public class PlayerMove : MonoBehaviour
                 footsteps.PlayFootstep(-1);
             }
         }
-        if (grounded)
-        {
-            //edgeCorrectionSpeed = oldECSpeed;
-        }
     }
 
     void CheckCrouch()
@@ -444,7 +408,7 @@ public class PlayerMove : MonoBehaviour
         //things to do every tick when crouching
         if (crouching)
         {
-            GetComponent<Idle>().StopIdle();
+            GetComponent<Idle>().StopIdleFull();
             model.up = currentPolygon.normal;
             model.forward = Vector3.Cross(transform.right, model.up);
         }
@@ -617,6 +581,13 @@ public class PlayerMove : MonoBehaviour
                 SetControllerDimensions(standingCollider);
             }
 
+            if(PlayerManager.Instance.currentState == PlayerManager.PlayerState.ladder)
+            {
+                anim.SetBool("ClimbingLadder", false);
+                GetComponent<LadderClimb>().SetRegrabTimer(.35f);
+                PlayerManager.Instance.currentState = PlayerManager.PlayerState.normal;
+            }
+
             if (crouching && speed != 0)
                 return;
             if (crouching && floorAbove)
@@ -625,7 +596,7 @@ public class PlayerMove : MonoBehaviour
             if (crouching)
                 hiJumping = true;
 
-            GetComponent<Idle>().StopIdle();
+            GetComponent<Idle>().StopIdleFull();
 
             anim.SetTrigger("Jump");
             velocity.y = Mathf.Sqrt(jumpHeight * -2.0f * Physics.gravity.y * gravityMult);
@@ -648,16 +619,20 @@ public class PlayerMove : MonoBehaviour
     //used to lean crock to one side if he's turning
     void TwistWaist()
     {
-        //Using angle and target angle rotated vectors
-        Vector3 currentDir = transform.forward;
-        Vector3 targetDir = Quaternion.Euler(new Vector3(0f, (angle - targetAngle) % 360f, 0f)) * transform.forward;
+        if (Time.timeScale > 0)
+        {
+            //Using angle and target angle rotated vectors
+            Vector3 currentDir = transform.forward;
+            Vector3 targetDir = Quaternion.Euler(new Vector3(0f, (angle - targetAngle) % 360f, 0f)) * transform.forward;
 
-        float targetAngleToLean = Vector3.SignedAngle(currentDir, targetDir, Vector3.up);
+            float targetAngleToLean = Vector3.SignedAngle(currentDir, targetDir, Vector3.up);
 
-        if (Time.timeScale < 1f)
+            if (Time.timeScale < 1f)
                 targetAngleToLean = angleToLean;
 
-        angleToLean = Mathf.Clamp(Mathf.Lerp(targetAngleToLean, angleToLean, .9f), -30f, 30f);
+            angleToLean = Mathf.Clamp(Mathf.Lerp(targetAngleToLean, angleToLean, .9f), -30f, 30f);
+        }
+        
 
         waist.rotation *= Quaternion.Euler(0f, 0f, angleToLean);
     }
@@ -684,6 +659,11 @@ public class PlayerMove : MonoBehaviour
     public void SetVelocity(Vector3 _velocity)
     {
         velocity = _velocity;
+    }
+
+    public Vector3 GetVelocity()
+    {
+        return velocity;
     }
 
     //this method can be called by other scripts (like Charge) to set angle equal to target angle. This mitigates glitches with leaning
