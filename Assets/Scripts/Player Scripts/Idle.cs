@@ -15,6 +15,9 @@ public class Idle : MonoBehaviour
 
     private int idleCount = 0; //the number of times idles have been triggered. This determines sleeping
 
+    public ParticleSystem sleepBubblePart;
+    public ParticleSystem wakeUpPart;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -33,6 +36,8 @@ public class Idle : MonoBehaviour
                 PlayIdle();
             else if(!sleeping)
             {
+                GetComponentInChildren<Blink>().CloseEyes();
+                sleepBubblePart.Play();
                 sleeping = true;
                 idleCount++;
                 anim.SetInteger("IdleCounter", idleCount);
@@ -65,6 +70,8 @@ public class Idle : MonoBehaviour
     //used on its own when the idle is stopped only by the animation finishing
     public void StopIdle()
     {
+        sleepBubblePart.Stop();
+        sleepBubblePart.Clear();
         idling = false;
         sleeping = false;
         anim.ResetTrigger("Idle");
@@ -75,7 +82,13 @@ public class Idle : MonoBehaviour
     //used only when player starts moving in some way
     public void StopIdleFull()
     {
+        if (sleeping)
+        {
+            wakeUpPart.Play();
+            GetComponentInChildren<Blink>().OpenEyes();
+        }
         idleCount = 0;
+        anim.SetInteger("IdleCounter", idleCount);
         StopIdle();
     }
 

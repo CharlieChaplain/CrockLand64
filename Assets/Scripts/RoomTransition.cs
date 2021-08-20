@@ -28,6 +28,8 @@ public class RoomTransition : MonoBehaviour
 
         yield return new WaitForSeconds(waitTime / 2f);
 
+        player.GetComponent<PlayerMove>().SetVelocity(Vector3.zero);
+
         player.GetComponent<CharacterController>().enabled = false;
         player.transform.position = destination.position;
         player.transform.forward = destination.forward;

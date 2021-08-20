@@ -13,16 +13,15 @@ public class Pause : MonoBehaviour
     float oldTimeScale = 1f;
 
     public Animator fadeAnim;
-    public Animator menuAnim;
-    public GameObject wealth;
-    Animator wealthAnim;
-    WealthCounter wealthCounter;
+
+    Menu currentMenu;
+
+    public List<Menu> allMenus;
 
     // Start is called before the first frame update
     void Start()
     {
-        wealthAnim = wealth.GetComponent<Animator>();
-        wealthCounter = wealth.GetComponent<WealthCounter>();
+        currentMenu = allMenus[0];
     }
 
     // Update is called once per frame
@@ -41,12 +40,18 @@ public class Pause : MonoBehaviour
                 PauseGame();
         }
 
+        if (paused && currentMenu == allMenus[0] && Input.GetButtonDown("Cancel"))
+            UnPauseGame();
+
         if (!Input.GetButton("Pause") && pressed)
             pressed = false;
 
         fadeAnim.SetBool("Paused", paused);
-        menuAnim.SetBool("Paused", paused);
-            
+
+        if (paused)
+        {
+            currentMenu.Logic();
+        }
     }
     bool CheckCanPause()
     {
@@ -60,16 +65,15 @@ public class Pause : MonoBehaviour
         paused = true;
         PlayerManager.Instance.paused = true;
 
+        currentMenu = allMenus[0];
+        currentMenu.cursor.ResetMenu();
+
         oldTimeScale = Time.timeScale;
         Time.timeScale = 0;
 
         PlayerManager.Instance.canMove = false;
 
-        wealthAnim.ResetTrigger("Enter");
-        wealthAnim.ResetTrigger("Leave");
-        wealthAnim.SetTrigger("Enter");
-        wealthCounter.isVisible = true;
-        wealthCounter.visibleTimer = 3f; //this must be any value above 0 so WealthCounter doesn't immediately hide it again
+        currentMenu.Enter();
     }
 
     void UnPauseGame()
@@ -81,15 +85,21 @@ public class Pause : MonoBehaviour
 
         PlayerManager.Instance.canMove = true;
 
-        wealthAnim.ResetTrigger("Enter");
-        wealthAnim.ResetTrigger("Leave");
-        wealthAnim.SetTrigger("Leave");
-        wealthCounter.isVisible = false;
-        wealthCounter.visibleTimer = 0;
+        currentMenu.Leave();
     }
 
     public static void SetPause(bool value)
     {
         activatePause = value;
+    }
+    /// <summary>
+    /// Changes the current menu displayed based on a given index
+    /// </summary>
+    /// <param name="index">0 = main pause menu; 1 = options root menu</param>
+    public void ChangeMenu(int index)
+    {
+        currentMenu.Leave();
+        currentMenu = allMenus[index];
+        currentMenu.Enter();
     }
 }

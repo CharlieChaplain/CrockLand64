@@ -9,6 +9,8 @@ public class Blink : MonoBehaviour
 
     private float TimeBetweenBlinks;
 
+    bool eyesOpen = true;
+
     void Start()
     {
         TimeBetweenBlinks = Random.Range(3f, 5f);
@@ -16,13 +18,25 @@ public class Blink : MonoBehaviour
 
     void Update()
     {
-        TimeBetweenBlinks -= Time.deltaTime;
+        if(eyesOpen)
+            TimeBetweenBlinks -= Time.deltaTime;
 
         if(TimeBetweenBlinks <= 0)
         {
             TimeBetweenBlinks = Random.Range(3f, 5f);
             StartCoroutine("BlinkCorout");
         }
+    }
+
+    public void CloseEyes()
+    {
+        eyesOpen = false;
+        eyeMaterial.SetTexture("_MainTex", eyeTextures[1]);
+    }
+    public void OpenEyes()
+    {
+        eyesOpen = true;
+        eyeMaterial.SetTexture("_MainTex", eyeTextures[0]);
     }
 
     IEnumerator BlinkCorout()

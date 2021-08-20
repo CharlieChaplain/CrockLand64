@@ -16,6 +16,9 @@ public class MoleTrapped_Logic : Enemy
 
     public Animator moleHillAnim;
 
+    public string moleID; //a 2 digit string representing the level the mole is in and which mole it is.
+    public MoleUI moleUI; //the corresponding UI element of the mole
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -24,6 +27,17 @@ public class MoleTrapped_Logic : Enemy
         controller = GetComponent<CharacterController>();
         col = GetComponent<BoxCollider>();
         bounceCol = GetComponent<SphereCollider>();
+
+        if (!int.TryParse(moleID, out int errorCatcher))
+            Debug.Log("MoleLogic: MOLE ID " + moleID + " IS INVALID AND WILL THROW ERRORS");
+        else
+        {
+            moleUI.moleID = moleID;
+            if (TreasureMaster.Instance.QueryMole(int.Parse(moleID.Substring(0, 1)), int.Parse(moleID.Substring(1, 1))))
+                Destroy(this.gameObjectd);
+        }
+            
+
 
     }
 
@@ -35,6 +49,9 @@ public class MoleTrapped_Logic : Enemy
     void Freed()
     {
         freed = true;
+        TreasureMaster.Instance.SaveMole(int.Parse(moleID.Substring(0, 1)), int.Parse(moleID.Substring(1, 1)));
+        moleUI.SaveMole();
+
         anim.SetTrigger("BreakFree");
         moleHillAnim.SetTrigger("BreakFree");
 
