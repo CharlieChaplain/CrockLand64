@@ -84,6 +84,8 @@ public class LadderClimb : MonoBehaviour
 
             PlayerManager.Instance.currentState = PlayerManager.PlayerState.ladder;
 
+            velocity = Vector3.zero;
+
             RaycastHit hit;
             Vector3 rayDir = currentLadder.transform.position - transform.position;
             rayDir.y = 0;

@@ -12,7 +12,7 @@ public class Chest : MonoBehaviour
     BoxCollider openCollision;
 
     public bool opened;
-    bool playCutscene = false;
+    //bool playCutscene = false;
 
     // Start is called before the first frame update
     void Start()

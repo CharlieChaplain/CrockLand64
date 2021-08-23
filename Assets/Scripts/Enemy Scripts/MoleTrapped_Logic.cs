@@ -34,7 +34,7 @@ public class MoleTrapped_Logic : Enemy
         {
             moleUI.moleID = moleID;
             if (TreasureMaster.Instance.QueryMole(int.Parse(moleID.Substring(0, 1)), int.Parse(moleID.Substring(1, 1))))
-                Destroy(this.gameObjectd);
+                Destroy(this.gameObject);
         }
             
 

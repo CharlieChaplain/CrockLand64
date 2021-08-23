@@ -9,6 +9,7 @@ public class Billboard : MonoBehaviour
     public bool billboardZ;
 
     public Camera cam;
+    public Vector3 initRotation;
 
     void Start()
     {
@@ -28,6 +29,6 @@ public class Billboard : MonoBehaviour
         if (billboardZ)
             rotationEulers.z = cam.transform.eulerAngles.z;
 
-        transform.rotation = Quaternion.Euler(rotationEulers);
+        transform.rotation = Quaternion.Euler(rotationEulers + initRotation);
     }
 }

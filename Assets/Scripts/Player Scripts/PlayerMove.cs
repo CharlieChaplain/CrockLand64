@@ -198,7 +198,7 @@ public class PlayerMove : MonoBehaviour
         //tries to fix unity's garbo default character controller when dealing with edges.
 
         //does not apply if crock is currently grounded or swimming or if he is moving upwards (jumping up usually)
-        if (grounded || PlayerManager.Instance.currentState == PlayerManager.PlayerState.swimming || velocity.y > 0)
+        if (grounded || PlayerManager.Instance.currentState == PlayerManager.PlayerState.swimming || velocity.y >= 0)
             return;
 
         Vector3 sphereCastOrigin = transform.position + controller.center;
