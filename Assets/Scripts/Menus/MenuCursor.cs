@@ -7,7 +7,7 @@ public class MenuCursor : MonoBehaviour
     public int numOptions; //the number of options on the current menu
     public int currentOption; //the option the cursor currently sits on
 
-    RectTransform rectTransform;
+    protected RectTransform rectTransform;
     Vector2 PosAtZeroY; //where the pointer is at when its y value is not altered.
 
     private void Start()
@@ -16,7 +16,7 @@ public class MenuCursor : MonoBehaviour
         PosAtZeroY = new Vector2(rectTransform.localPosition.x, 0);
     }
 
-    public void ResetMenu()
+    public virtual void ResetMenu()
     {
         currentOption = 0;
 
@@ -26,7 +26,7 @@ public class MenuCursor : MonoBehaviour
     }
 
     //moves the cursor down one option
-    public void MoveDown()
+    public virtual void MoveDown()
     {
         if(currentOption + 1 >= numOptions)
         {
@@ -41,7 +41,7 @@ public class MenuCursor : MonoBehaviour
     }
 
     //moves the cursor up one option
-    public void MoveUp()
+    public virtual void MoveUp()
     {
         if (currentOption -1 < 0)
         {
@@ -55,7 +55,7 @@ public class MenuCursor : MonoBehaviour
         }
     }
 
-    IEnumerator MoveCursor(Vector3 targetPos)
+    protected virtual IEnumerator MoveCursor(Vector3 targetPos)
     {
         Vector3 initPos = rectTransform.localPosition;
         int numFrames = 15;

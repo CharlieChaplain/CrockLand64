@@ -36,6 +36,7 @@ public class MainPauseMenu : Menu
                     pause.ChangeMenu(1);
                     break;
                 case 1:
+                    pause.ChangeMenu(2);
                     break;
                 case 2:
                     break;

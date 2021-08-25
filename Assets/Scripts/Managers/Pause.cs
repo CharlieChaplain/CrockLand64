@@ -40,7 +40,7 @@ public class Pause : MonoBehaviour
                 PauseGame();
         }
 
-        if (paused && currentMenu == allMenus[0] && Input.GetButtonDown("Cancel"))
+        if (paused && currentMenu == allMenus[0] && Input.GetButtonDown("Cancel") && !pressed)
             UnPauseGame();
 
         if (!Input.GetButton("Pause") && pressed)
@@ -95,11 +95,17 @@ public class Pause : MonoBehaviour
     /// <summary>
     /// Changes the current menu displayed based on a given index
     /// </summary>
-    /// <param name="index">0 = main pause menu; 1 = options root menu</param>
+    /// <param name="index">0 = main pause menu; 1 = options root menu; 2 = treasure root menu</param>
     public void ChangeMenu(int index)
     {
         currentMenu.Leave();
         currentMenu = allMenus[index];
         currentMenu.Enter();
+    }
+
+    //checks if currentMenu is the one indicated by the input
+    public bool CheckMenu(int i)
+    {
+        return currentMenu == allMenus[i];
     }
 }

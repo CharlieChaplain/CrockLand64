@@ -10,7 +10,7 @@ public class Menu : MonoBehaviour
     public MenuCursor cursor;
     public int numOptions;
 
-    bool pressed; //prevents holding the button to scroll every frame
+    protected bool pressed; //prevents holding the button to scroll every frame
 
     public List<Image> optionImages;
 
@@ -28,13 +28,13 @@ public class Menu : MonoBehaviour
             return;
         if (!pressed)
         {
-            if (Input.GetAxis("Vertical") > 0)
+            if (Input.GetAxisRaw("Vertical") > 0)
             {
                 pressed = true;
                 cursor.MoveUp();
                 RecolorOptions();
             }
-            else if (Input.GetAxis("Vertical") < 0)
+            else if (Input.GetAxisRaw("Vertical") < 0)
             {
                 pressed = true;
                 cursor.MoveDown();
@@ -42,11 +42,11 @@ public class Menu : MonoBehaviour
             }
         }
 
-        if ((Input.GetAxis("Vertical") == 0))
+        if ((Input.GetAxisRaw("Vertical") == 0))
             pressed = false;
     }
 
-    void RecolorOptions()
+    protected virtual void RecolorOptions()
     {
         for(int i = 0; i < optionImages.Count; i++)
         {
