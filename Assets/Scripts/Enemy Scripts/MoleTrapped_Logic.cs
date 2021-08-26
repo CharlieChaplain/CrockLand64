@@ -49,7 +49,8 @@ public class MoleTrapped_Logic : Enemy
     void Freed()
     {
         freed = true;
-        TreasureMaster.Instance.SaveMole(int.Parse(moleID.Substring(0, 1)), int.Parse(moleID.Substring(1, 1)));
+        TreasureMaster.Instance.RescueMole(int.Parse(moleID.Substring(0, 1)), int.Parse(moleID.Substring(1, 1)));
+        TreasureMaster.Instance.Save();
         moleUI.SaveMole();
 
         anim.SetTrigger("BreakFree");

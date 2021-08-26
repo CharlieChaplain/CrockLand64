@@ -8,6 +8,9 @@ public class Chest : MonoBehaviour
 
     public GameObject treasure;
 
+    public Vector2 chestID; //the level and number of chest this is, for saving purposes
+    public TreasureSlot treasureSlot; //the UI element for this treasure
+
     BoxCollider closedCollision;
     BoxCollider openCollision;
 
@@ -19,6 +22,12 @@ public class Chest : MonoBehaviour
     {
         closedCollision = transform.Find("closedCollision").GetComponent<BoxCollider>();
         openCollision = transform.Find("openCollision").GetComponent<BoxCollider>();
+
+        if (TreasureMaster.Instance.QueryTreasure(0, 0))
+        {
+            GetComponentInChildren<Animator>().SetBool("Opened", true);
+            opened = true;
+        }
     }
 
     void Open()
@@ -28,6 +37,11 @@ public class Chest : MonoBehaviour
         openCollision.enabled = true;
 
         opened = true;
+
+        TreasureMaster.Instance.CollectTreasure((int)chestID.x, (int)chestID.y);
+        TreasureMaster.Instance.Save();
+        treasureSlot.CollectTreasure();
+
     }
 
     private void OnTriggerEnter(Collider other)

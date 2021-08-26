@@ -32,7 +32,7 @@ public class WealthCounter : MonoBehaviour
 
     void CheckWealth()
     {
-        if (PlayerManager.Instance.displayWealth != PlayerManager.Instance.wealth)
+        if (TreasureMaster.Instance.displayWealth != TreasureMaster.Instance.wealth)
         {
             DisplayWealth();
         }
@@ -50,7 +50,7 @@ public class WealthCounter : MonoBehaviour
 
     void PopulateText()
     {
-        string number = PlayerManager.Instance.displayWealth.ToString();
+        string number = TreasureMaster.Instance.displayWealth.ToString();
 
         while (number.Length != counterText.Count)
             number = "-" + number;
@@ -88,11 +88,11 @@ public class WealthCounter : MonoBehaviour
     IEnumerator AddWealth()
     {
         coroutOn = true;
-        wealthToAdd = PlayerManager.Instance.wealth - PlayerManager.Instance.displayWealth;
+        wealthToAdd = TreasureMaster.Instance.wealth - TreasureMaster.Instance.displayWealth;
 
         while (wealthToAdd != 0)
         {
-            wealthToAdd = PlayerManager.Instance.wealth - PlayerManager.Instance.displayWealth;
+            wealthToAdd = TreasureMaster.Instance.wealth - TreasureMaster.Instance.displayWealth;
 
             //the time until this coroutine loops again. If wealthToAdd is a larger number, the increment will be up to 10x faster
             float time = 0.1f / (((Mathf.Clamp(Mathf.Abs(wealthToAdd), 1f, 100f) - 1f) / 10f) + 1f);
@@ -103,7 +103,7 @@ public class WealthCounter : MonoBehaviour
             else if (wealthToAdd < 0)
                 increment = -1;
 
-            PlayerManager.Instance.displayWealth += increment;
+            TreasureMaster.Instance.displayWealth += increment;
 
             yield return new WaitForSeconds(time);
         }

@@ -13,8 +13,6 @@ public class TreeLogic : MonoBehaviour
     {
         if(other.gameObject.layer == 9) //9 = player
         {
-            Debug.Log("Leaves");
-
             if(other.GetComponent<PlayerMove>().GetVelocity().y < 0)
             {
                 rustle = true;

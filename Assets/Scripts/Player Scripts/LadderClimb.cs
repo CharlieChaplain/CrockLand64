@@ -36,12 +36,10 @@ public class LadderClimb : MonoBehaviour
         Vector3 rayDir = currentLadder.transform.position - transform.position;
         rayDir.y = 0;
         Ray ladderRay = new Ray(transform.position, rayDir);
-        Debug.DrawRay(transform.position, rayDir, Color.red, 5f);
         Vector3 newForward = transform.forward;
 
         if (Physics.Raycast(ladderRay, out hit, 5f, ladderMask, QueryTriggerInteraction.Ignore))
         {
-            Debug.Log("LADDER");
             newForward = -hit.normal;
         }
         transform.forward = newForward;
@@ -96,7 +94,6 @@ public class LadderClimb : MonoBehaviour
                 newPos.y = transform.position.y;
 
                 controller.enabled = false;
-                Debug.Log(newPos);
                 transform.position = newPos;
                 controller.enabled = true;
             }
@@ -113,13 +110,10 @@ public class LadderClimb : MonoBehaviour
         {
             if (other.tag == "LadderTop")
             {
-                Debug.Log("top");
-
                 EndClimb(Vector3.up * 20f);
             }
             else if (velocity.y < 0 && other.tag == "LadderBot")
             {
-                Debug.Log("bottom");
                 transform.forward = -transform.forward;
                 EndClimb(transform.forward * 10f);
             }

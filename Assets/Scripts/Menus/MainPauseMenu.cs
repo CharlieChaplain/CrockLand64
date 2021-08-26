@@ -39,11 +39,21 @@ public class MainPauseMenu : Menu
                     pause.ChangeMenu(2);
                     break;
                 case 2:
+                    SaveAndQuit();
                     break;
                 default:
                     break;
             }
         }
+    }
+
+    void SaveAndQuit()
+    {
+        SaveLoadManager.SaveTreasure(TreasureMaster.Instance);
+
+        IrisWipe.Instance.WipeOut();
+
+        StartCoroutine("QuitGame", 3f);
     }
 
     public override void Enter()
@@ -70,5 +80,18 @@ public class MainPauseMenu : Menu
         wealthAnim.SetTrigger("Leave");
         wealthCounter.isVisible = false;
         wealthCounter.visibleTimer = 0;
+    }
+
+    IEnumerator QuitGame(float time)
+    {
+        yield return new WaitForSecondsRealtime(time);
+
+        #if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+        #elif UNITY_WEBPLAYER
+                Application.OpenURL(webplayerQuitURL);
+        #else
+                Application.Quit();
+        #endif
     }
 }

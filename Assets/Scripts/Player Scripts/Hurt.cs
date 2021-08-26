@@ -58,12 +58,12 @@ public class Hurt : MonoBehaviour
         //drops doubloons on hurt
         int wealthLost = intensity + Random.Range(-variance, variance);
 
-        if(wealthLost > PlayerManager.Instance.wealth)
+        if(wealthLost > TreasureMaster.Instance.wealth)
         {
-            wealthLost = PlayerManager.Instance.wealth;
+            wealthLost = TreasureMaster.Instance.wealth;
         }
 
-        PlayerManager.Instance.AddWealth(-wealthLost);
+        TreasureMaster.Instance.AddWealth(-wealthLost);
 
         for (int i = 0; i < wealthLost; i++)
         {

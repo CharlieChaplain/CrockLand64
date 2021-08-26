@@ -10,8 +10,8 @@ public class PlayerManager : MonoBehaviour
 
     public Vector3 faceDir; //the direction the player is facing (not looking via camera)
 
-    public int wealth;
-    public int displayWealth;
+    //public int wealth;
+    //public int displayWealth;
 
     public PlaySound currentHitSound; //the current sound to be played when crock hits something
 
@@ -78,9 +78,10 @@ public class PlayerManager : MonoBehaviour
             Time.timeScale = 1f;
         }
     }
-
+    /*
     public void AddWealth(int amount)
     {
         wealth += amount;
     }
+    */
 }

@@ -49,6 +49,9 @@ public class Key_Logic : Enemy
         home = transform.position;
 
         initSpeed = speed;
+
+        if (TreasureMaster.Instance.QueryTreasure(0, 0))
+            Destroy(gameObject);
     }
 
     // Update is called once per frame

@@ -33,7 +33,7 @@ public class Wealth : MonoBehaviour
         {
             killTimer = -1f;
 
-            PlayerManager.Instance.AddWealth(value);
+            TreasureMaster.Instance.AddWealth(value);
             collectSound.Play(transform.position);
             DisableAll();
             onCollectParticles.Play();
