@@ -73,6 +73,8 @@ public class PlayerMove : MonoBehaviour
     public float waterCheckRadius;
     public LayerMask waterMask;
 
+    public GameObject buttonAlert; //shows up when crock can do things with a button
+
 
     const float ROOT2 = 1.414f;
 
@@ -171,6 +173,28 @@ public class PlayerMove : MonoBehaviour
                 velocity = new Vector3(velocity.x, 10f, velocity.z);
             }
         }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (PlayerManager.Instance.canMove && other.gameObject.CompareTag("NPC"))
+        {
+            buttonAlert.SetActive(true);
+
+            if (Input.GetButtonDown("Punch"))
+            {
+                other.GetComponent<NPC>().Engage();
+
+                buttonAlert.SetActive(false);
+            }
+        }
+        else
+            buttonAlert.SetActive(false);
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("NPC"))
+            buttonAlert.SetActive(false);
     }
     private void OnDrawGizmosSelected()
     {
@@ -631,6 +655,11 @@ public class PlayerMove : MonoBehaviour
                 targetAngleToLean = angleToLean;
 
             angleToLean = Mathf.Clamp(Mathf.Lerp(targetAngleToLean, angleToLean, .9f), -30f, 30f);
+        }
+
+        if (!PlayerManager.Instance.canMove)
+        {
+            angleToLean = 0;
         }
         
 

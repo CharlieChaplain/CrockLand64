@@ -9,6 +9,7 @@ TagManager:
   - HurtBox
   - LadderTop
   - LadderBot
+  - NPC
   layers:
   - Default
   - TransparentFX

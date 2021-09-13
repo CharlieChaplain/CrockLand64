@@ -71,8 +71,6 @@ public class Pause : MonoBehaviour
         oldTimeScale = Time.timeScale;
         Time.timeScale = 0;
 
-        PlayerManager.Instance.canMove = false;
-
         currentMenu.Enter();
     }
 
@@ -82,8 +80,6 @@ public class Pause : MonoBehaviour
         PlayerManager.Instance.paused = false;
 
         Time.timeScale = oldTimeScale;
-
-        PlayerManager.Instance.canMove = true;
 
         currentMenu.Leave();
     }
