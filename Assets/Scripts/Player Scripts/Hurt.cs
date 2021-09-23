@@ -14,18 +14,6 @@ public class Hurt : MonoBehaviour
 
     public GameObject doubloon; //will be dropped on getting hurt
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void HurtPlayer(int intensity, int variance, Vector3 source)
     {
         //will only hurt crock if he is not still invincible from getting hurt

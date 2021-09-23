@@ -23,7 +23,6 @@ public class Key_Logic : Enemy
     public bool fleeing = false;
 
     float hurtTimer = 0;
-    float standupTimer = 0;
 
     public GameObject headTrigger;
 
@@ -164,26 +163,6 @@ public class Key_Logic : Enemy
         intendedDir.Normalize();
     }
 
-    void StandUp()
-    {
-        if (carried)
-        {
-            standupTimer = 0;
-        }
-
-        if(felled && !carried)
-        {
-            standupTimer += Time.deltaTime;
-
-            if (standupTimer >= 4f && standupTimer < 5f)
-                anim.SetFloat("StandUp", 2f);
-            else if (standupTimer >= 5f)
-            {
-                anim.SetFloat("StandUp", 3f);
-                health = maxHealth;
-            }
-        }
-    }
 
     private void OnTriggerEnter(Collider other)
     {

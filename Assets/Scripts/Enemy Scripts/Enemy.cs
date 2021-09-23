@@ -27,9 +27,14 @@ public class Enemy : MonoBehaviour
 
     public GameObject modelObj;
 
+    protected float standupTimer = 0;
+
     // Start is called before the first frame update
     protected virtual void Start()
     {
+        anim = GetComponentInChildren<Animator>();
+        controller = GetComponent<CharacterController>();
+
         health = maxHealth;
         felled = false;
     }
@@ -52,6 +57,28 @@ public class Enemy : MonoBehaviour
     {
         velocity = force;
         StartCoroutine("heavyThrow");
+    }
+
+    protected void StandUp()
+    {
+        if (carried)
+        {
+            standupTimer = 0;
+        }
+
+        if (felled && !carried)
+        {
+            standupTimer += Time.deltaTime;
+
+            if (standupTimer >= 4f && standupTimer < 5f)
+                anim.SetFloat("StandUp", 2f);
+            else if (standupTimer >= 5f)
+            {
+                anim.SetFloat("StandUp", 3f);
+                health = maxHealth;
+                felled = false;
+            }
+        }
     }
 
     protected void ApplyGravity()

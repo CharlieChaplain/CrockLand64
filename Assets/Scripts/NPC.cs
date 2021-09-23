@@ -5,7 +5,7 @@ using Cinemachine;
 
 public class NPC : MonoBehaviour
 {
-    public CinemachineVirtualCameraBase talkCutsceneCamera; //the camera to lerp to 
+    //public CinemachineVirtualCameraBase talkCutsceneCamera; //the camera to lerp to 
     public CinemachineVirtualCameraBase originalCam;
     public Transform crockSpot; //where crock will move to stand in.
     public LayerMask groundMask;
@@ -31,7 +31,7 @@ public class NPC : MonoBehaviour
 
         anim.SetBool("Talking", true);
         originalCam = CameraManager.Instance.currentCamera;
-        CameraManager.Instance.SetCamera(talkCutsceneCamera.gameObject, 2f);
+        CameraManager.Instance.SetCamera(dialogue.cameras[0], 1.8f);
 
         PlayerManager.Instance.player.GetComponent<PlayerCutsceneMove>().Move(crockSpot);
 

@@ -169,7 +169,7 @@ public class PlayerMove : MonoBehaviour
             //if you land on an enemy you get bounced. Doesn't work perfectly as of now
             if (!grounded)
             {
-                Debug.Log("boing");
+                //Debug.Log("boing");
                 velocity = new Vector3(velocity.x, 10f, velocity.z);
             }
         }

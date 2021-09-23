@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class DialogueManager : MonoBehaviour
 {
@@ -28,6 +29,8 @@ public class DialogueManager : MonoBehaviour
     GameObject dialogueBox;
     Animator dialogueAnim;
     TextMeshProUGUI dialogueText;
+    GameObject nextArrow;
+    Image portrait;
 
     //changes per dialogue
     Dialogue currentDialogue;
@@ -43,6 +46,10 @@ public class DialogueManager : MonoBehaviour
 
         dialogueAnim = dialogueBox.GetComponent<Animator>();
         dialogueText = dialogueBox.GetComponentInChildren<TextMeshProUGUI>();
+        nextArrow = GameObject.Find("NextArrow");
+        nextArrow.SetActive(false);
+
+        portrait = GameObject.Find("Portrait").GetComponent<Image>();
     }
 
     private void Update()
@@ -65,6 +72,8 @@ public class DialogueManager : MonoBehaviour
 
         dialogueAnim.SetBool("Visible", true);
 
+        portrait.sprite = currentDialogue.portraits[0];
+
         foreach(string sentence in dialogue.sentences)
         {
             sentences.Enqueue(sentence);
@@ -81,23 +90,48 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        //DO COMMAND LOGIC HERE IN THIS IF/ELSE
-        if (false)
-        {
+        string sentence = sentences.Dequeue();
 
-        }else
+        //camera change::   _CAM-0-0    where first number is camera number in Dialogue camera array and second is lerp time in milliseconds
+        //portrait change::   _POR-0    where the number is portrait number in Dialogue portrait array
+        if (sentence.Substring(0, 4) == "_CAM")
         {
+            string[] parameters = sentence.Split('-');
+            //makes sure values are parsable
+            int index = int.Parse(parameters[1]);
+            if (index >= parameters.Length)
+                Debug.Log("Camera change index out of bounds!");
+            else
+                CameraManager.Instance.SetCamera(currentDialogue.cameras[index], int.Parse(parameters[2]) / 1000f);
+
+            NextSentence();
+        }
+        else if(sentence.Substring(0, 4) == "_POR")
+        {
+            string[] parameters = sentence.Split('-');
+            //makes sure values are parsable
+            int index = int.Parse(parameters[1]);
+            if(index >= parameters.Length)
+                Debug.Log("Portrait change index out of bounds!");
+            else
+                portrait.sprite = currentDialogue.portraits[index];
+
+            NextSentence();
+        }
+        else
+        {
+            nextArrow.SetActive(false);
             currentDialogue.npc.ToggleTalking(true);
-            string sentence = sentences.Dequeue();
+            
             StartCoroutine("Type", sentence);
         }
-
     }
 
     void EndDialogue()
     {
         dialogueAnim.SetBool("Visible", false);
         talking = false;
+        nextArrow.SetActive(false);
         currentDialogue.npc.Disengage();
     }
 
@@ -129,5 +163,6 @@ public class DialogueManager : MonoBehaviour
 
         displayFinished = true;
         currentDialogue.npc.ToggleTalking(false);
+        nextArrow.SetActive(true);
     }
 }
