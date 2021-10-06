@@ -18,6 +18,7 @@ public class Attack : MonoBehaviour
     public GameObject punchCollider;
     public GameObject AirRollCollider;
     public GameObject GroundPoundCollider;
+    public GameObject ChargeCollider;
 
     public LayerMask enemyMask;
 

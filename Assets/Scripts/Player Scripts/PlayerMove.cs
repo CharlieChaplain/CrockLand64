@@ -173,6 +173,12 @@ public class PlayerMove : MonoBehaviour
                 velocity = new Vector3(velocity.x, 10f, velocity.z);
             }
         }
+
+        //deals with crock changing forms from enemy attacks
+        if (other.transform.gameObject.CompareTag("FormChanger"))
+        {
+            Debug.Log(other.transform.gameObject.GetComponent<FormChangerInfo>().form);
+        }
     }
 
     private void OnTriggerStay(Collider other)
@@ -254,9 +260,11 @@ public class PlayerMove : MonoBehaviour
 
         inputVector = Quaternion.Euler(0, cam.eulerAngles.y, 0) * direction;
 
-        //speeds up turning radius depending on speed and also if the stick movements are small
+        //speeds up turning radius depending on speed
         //float actualTurnSpeed = _turnSpeed / speed * (Mathf.Clamp(direction.sqrMagnitude, 0.01f, 1.0f));
-        float actualTurnSpeed = Mathf.Max(_turnSpeed * (speed / _maxSpeed), 0.01f);
+        //float actualTurnSpeed = Mathf.Max((speed / _maxSpeed) / _turnSpeed, 0.01f);
+        //actualturnspeed needs to be an inverse number to _turnspeed due to Mathf.SmoothDampAngle. It also is multiplied by 100 to make the value in inspector smaller
+        float actualTurnSpeed = (speed / _maxSpeed) / _turnSpeed;
 
         if (direction.magnitude >= 0.1f && canMove)
         {
@@ -272,11 +280,11 @@ public class PlayerMove : MonoBehaviour
         else
         {
             //decelerates player
-            float decelVal = decel * .6f;
+            float decelVal = decel * 40f * Time.deltaTime; //40 accounts for multiplying by delta time later
             
             //--------old way was to just clamp it. New way is to add value to negative speed til it equalizes at 0--------
             //speed = Mathf.Clamp(speed, 0, functionalMaxSpeed);
-            if(speed <= 0 && speed > -1f) //this just squashes speed when it gets too small
+            if(speed <= 0 && speed > -1f * 40f * Time.deltaTime) //this just squashes speed when it gets too small
             {
                 decelVal = 0;
                 speed = 0;
@@ -700,6 +708,13 @@ public class PlayerMove : MonoBehaviour
     {
         angle = targetAngle;
         angleToLean = 0;
+    }
+
+    //starts unground timer
+    public void Unground()
+    {
+        ungroundTimerUp = false;
+        StartCoroutine(UngroundTimer());
     }
 
     IEnumerator UngroundTimer()

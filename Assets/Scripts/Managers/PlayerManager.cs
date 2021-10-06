@@ -29,6 +29,12 @@ public class PlayerManager : MonoBehaviour
         hurt
     }
 
+    public enum PlayerForm
+    {
+        none,
+        stone
+    }
+
     public PlayerState currentState;
     public bool canMove;
 

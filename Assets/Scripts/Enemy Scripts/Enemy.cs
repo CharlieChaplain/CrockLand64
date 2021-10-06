@@ -24,6 +24,8 @@ public class Enemy : MonoBehaviour
     protected CharacterController controller;
 
     public GameObject hurtPart; //the particle to play when enemy is struck
+    public GameObject diePart; //the partical to play when enemy dies
+    public GameObject ToHideOnDeath; //collection of objects in enemy root object to hide before destroying the enemy
 
     public GameObject modelObj;
 
@@ -44,9 +46,9 @@ public class Enemy : MonoBehaviour
     {
     }
 
-    protected void Die()
-    {
-    }
+    //protected void Die()
+    //{
+    //}
 
     public bool IsFelled()
     {

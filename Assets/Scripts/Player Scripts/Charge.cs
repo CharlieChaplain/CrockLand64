@@ -82,6 +82,18 @@ public class Charge : MonoBehaviour
 
             Vector3 moveDir = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
         }
+        
+        //breaks free if crock collides with anything
+        if (CheckCollisions())
+        {
+            Vector3 newV = (-transform.forward + (transform.up * 10f)).normalized * 10f;
+            playerMove.SetSpeed(-12f);
+            playerMove.SetVelocity(newV);
+            StopCharge();
+            StartCoroutine("Bounce");
+            return;
+        }
+
         controller.Move(transform.forward * chargeSpeed * Time.deltaTime);
         playerMove.SetSpeed(chargeSpeed); //done so playerMove knows how fast crock is going incase charge is interrupted
 
@@ -90,20 +102,13 @@ public class Charge : MonoBehaviour
 
         playerMove.SetAngleToTarget();
 
-        if (CheckCollisions())
-        {
-            Vector3 newV = (-transform.forward + (transform.up * 10f)).normalized * 10f;
-            playerMove.SetSpeed(-12f);
-            playerMove.SetVelocity(newV);
-            StopCharge();
-            StartCoroutine("Bounce");
-        }
-
         playerMove.SlopeCorrection();
     }
 
     void StartCharge()
     {
+        HurtBoxInfo.ToggleHurtBox(GetComponent<Attack>().ChargeCollider, true);
+
         pressed = true;
         PlayerManager.Instance.currentState = PlayerManager.PlayerState.charging;
         chargeTimer = chargeLength;
@@ -118,6 +123,8 @@ public class Charge : MonoBehaviour
     }
     public void StopCharge()
     {
+        HurtBoxInfo.ToggleHurtBox(GetComponent<Attack>().ChargeCollider, false);
+
         charging = false;
         trail.enabled = false;
         trail.Clear();
@@ -152,10 +159,11 @@ public class Charge : MonoBehaviour
 
     IEnumerator Bounce()
     {
+        GetComponent<PlayerMove>().Unground();
         anim.SetTrigger("Bounce");
-        PlayerManager.Instance.canMove = false;
-        while (!playerMove.GetGrounded())
+        for(float t = 0; t < 0.2f; t += Time.deltaTime)
+        {
             yield return null;
-        PlayerManager.Instance.canMove = true;
+        }
     }
 }

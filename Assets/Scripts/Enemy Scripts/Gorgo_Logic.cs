@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Nutter_Logic : Enemy
+public class Gorgo_Logic : Enemy
 {
     float hurtTimer = 0;
 
     Enemy_Pursue pursue;
     Enemy_Wander wander;
 
-    public GameObject attackHurtBox;
     public GameObject headTrigger;
 
     public float turnSpeed;
@@ -17,8 +16,10 @@ public class Nutter_Logic : Enemy
 
     public bool attacking;
 
-    bool canMoveDuringAttack;
-
+    public Texture[] texs;
+    
+    public GameObject auraPrefab;
+    GameObject aura;
 
     // Start is called before the first frame update
     protected override void Start()
@@ -30,7 +31,7 @@ public class Nutter_Logic : Enemy
 
         pursue.target = PlayerManager.Instance.player;
 
-        HurtBoxInfo.ToggleHurtBox(attackHurtBox, false);
+        GetComponentInChildren<SkinnedMeshRenderer>().material.mainTexture = texs[0];
     }
 
     // Update is called once per frame
@@ -39,8 +40,10 @@ public class Nutter_Logic : Enemy
         if (hurtTimer > 0)
             hurtTimer -= Time.deltaTime;
         else if (attacking)
-            AttackMovement();
-        else
+        {
+            //call update function for aura object here
+        }
+        else if (!attacking)
         {
             Move();
             AttackLogic();
@@ -116,11 +119,6 @@ public class Nutter_Logic : Enemy
         //end if -- not being carried
     }
 
-    public void ToggleHurtBox(bool toggle)
-    {
-        HurtBoxInfo.ToggleHurtBox(attackHurtBox, toggle);
-    }
-
     //checks conditions and starts attack if they are met
     void AttackLogic()
     {
@@ -129,27 +127,13 @@ public class Nutter_Logic : Enemy
 
         Vector3 dir = pursue.target.transform.position - transform.position;
         float angle = Vector3.Angle(transform.forward, dir);
-        if (angle < 20f && dir.magnitude < 2.2f)
+        if (angle < 20f && dir.magnitude < 4f)
         {
             attacking = true;
             anim.SetTrigger("Attack");
-            canMoveDuringAttack = true;
+            aura = Instantiate(auraPrefab, transform.position, Quaternion.identity);
+            aura.GetComponent<EnemyAura_Logic>().OnSpawn();
         }
-    }
-    //the logic nutter follows while "attacking" is true (the whole time the animation plays)
-    void AttackMovement()
-    {
-        if (canMoveDuringAttack)
-        {
-            Vector3 dir = pursue.target.transform.position - transform.position;
-            dir.y = 0;
-            transform.forward = Vector3.RotateTowards(transform.forward, dir, turnSpeed, accel) * pursue.speed;
-        }
-    }
-    public void AttackCoroutine()
-    {
-        canMoveDuringAttack = false;
-        StartCoroutine(Attack());
     }
 
     //deals with getting hit by crock
@@ -197,6 +181,18 @@ public class Nutter_Logic : Enemy
         }
     }
 
+    public void ChangeTex(int index)
+    {
+        if (index < 0 || index >= texs.Length)
+            return;
+        GetComponentInChildren<SkinnedMeshRenderer>().material.mainTexture = texs[index];
+    }
+
+    public void ActivateAura()
+    {
+        aura.GetComponent<EnemyAura_Logic>().Activate();
+    }
+
     IEnumerator Attack()
     {
         for(float f = 0; f < .33f; f += Time.deltaTime)
@@ -206,7 +202,7 @@ public class Nutter_Logic : Enemy
         }
     }
 
-    //will reset the hit trigger if it doesn't happen immediately so the nutter doesn't wobble at a weird time
+    //will reset the hit trigger if it doesn't happen immediately so the gorgo doesn't get hurt at a weird time
     IEnumerator ResetHit()
     {
         yield return new WaitForSeconds(0.05f);

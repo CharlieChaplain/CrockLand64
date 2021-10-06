@@ -10,6 +10,7 @@ TagManager:
   - LadderTop
   - LadderBot
   - NPC
+  - FormChanger
   layers:
   - Default
   - TransparentFX
