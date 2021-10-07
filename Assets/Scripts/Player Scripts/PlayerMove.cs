@@ -22,6 +22,7 @@ public class PlayerMove : MonoBehaviour
 
     public float jumpHeight;
     private float oldJumpHeight;
+    private float currentFormJumpHeight;
 
     public float maxSpeed = 10f;
     private float functionalMaxSpeed;
@@ -75,6 +76,7 @@ public class PlayerMove : MonoBehaviour
 
     public GameObject buttonAlert; //shows up when crock can do things with a button
 
+    Form_Stone stone;
 
     const float ROOT2 = 1.414f;
 
@@ -83,12 +85,14 @@ public class PlayerMove : MonoBehaviour
         functionalMaxSpeed = maxSpeed;
         decel = accel;
         oldJumpHeight = jumpHeight;
+        currentFormJumpHeight = jumpHeight;
         oldDownGravMult = downGravMult;
         oldUpGravMult = upGravMult;
         oldMaxSpeed = maxSpeed;
         oldECSpeed = edgeCorrectionSpeed;
 
         swim = GetComponent<Swim>();
+        stone = GetComponent<Form_Stone>();
     }
 
     void Update()
@@ -128,6 +132,9 @@ public class PlayerMove : MonoBehaviour
             case PlayerManager.PlayerState.hurt:
                 HurtMove();
                 break;
+            case PlayerManager.PlayerState.transformed:
+                TransformedSwitch(canMove);
+                break;
             default:
                 break;
 
@@ -161,6 +168,41 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// if crock is transformed, this function determines what to do with a switch statement
+    /// </summary>
+    void TransformedSwitch(bool canMove)
+    {
+        switch (PlayerManager.Instance.currentForm)
+        {
+            case PlayerManager.PlayerForm.stone:
+                Move(stone.speed, stone.turnSpeed, canMove);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /// <summary>
+    /// call this when form is changed
+    /// </summary>
+    /// <param name="form">the form crock must go back to</param>
+    public void ChangeForm(PlayerManager.PlayerForm form)
+    {
+        switch (form)
+        {
+            case PlayerManager.PlayerForm.stone:
+                PlayerManager.Instance.currentForm = PlayerManager.PlayerForm.stone;
+                PlayerManager.Instance.currentState = PlayerManager.PlayerState.transformed;
+                jumpHeight = stone.jumpHeight;
+                currentFormJumpHeight = stone.jumpHeight;
+                GetComponent<ChangeModel>().ChangeModelTo(2);
+                anim.runtimeAnimatorController = stone.animController;
+                break;
+            default:
+                break;
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -177,7 +219,7 @@ public class PlayerMove : MonoBehaviour
         //deals with crock changing forms from enemy attacks
         if (other.transform.gameObject.CompareTag("FormChanger"))
         {
-            Debug.Log(other.transform.gameObject.GetComponent<FormChangerInfo>().form);
+            ChangeForm(other.GetComponent<FormChangerInfo>().form);
         }
     }
 
@@ -410,7 +452,7 @@ public class PlayerMove : MonoBehaviour
             jumping = false;
             hiJumping = false;
 
-            jumpHeight = oldJumpHeight;
+            jumpHeight = currentFormJumpHeight;
             downGravMult = oldDownGravMult;
             upGravMult = oldUpGravMult;
             maxSpeed = oldMaxSpeed;
@@ -427,7 +469,7 @@ public class PlayerMove : MonoBehaviour
 
     void CheckCrouch()
     {
-        crouching = Input.GetAxis("Crouch") > 0 && grounded;
+        crouching = Input.GetAxis("Crouch") > 0 && grounded && PlayerManager.Instance.currentState != PlayerManager.PlayerState.transformed;
 
         //keeps crock crouching if he's under a low ceiling
         floorAbove = Physics.Raycast(transform.position + (Vector3.up * controller.height), Vector3.up, (controller.height / 2f) + 0.1f);

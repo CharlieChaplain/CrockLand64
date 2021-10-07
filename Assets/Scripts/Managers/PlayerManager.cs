@@ -26,7 +26,8 @@ public class PlayerManager : MonoBehaviour
         swimming,
         carrying,
         ladder,
-        hurt
+        hurt,
+        transformed
     }
 
     public enum PlayerForm
@@ -36,6 +37,7 @@ public class PlayerManager : MonoBehaviour
     }
 
     public PlayerState currentState;
+    public PlayerForm currentForm;
     public bool canMove;
 
     public List<PlaySound> hitSounds;
@@ -57,6 +59,7 @@ public class PlayerManager : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
         currentState = PlayerState.normal;
+        currentForm = PlayerForm.none;
         canMove = true;
 
         currentHitSound = hitSounds[0];
@@ -67,6 +70,7 @@ public class PlayerManager : MonoBehaviour
     {
         player = GameObject.FindGameObjectWithTag("Player");
         currentState = PlayerState.normal;
+        currentForm = PlayerForm.none;
         canMove = true;
 
         currentHitSound = hitSounds[0];

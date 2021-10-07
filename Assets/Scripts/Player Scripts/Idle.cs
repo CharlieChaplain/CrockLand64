@@ -28,21 +28,24 @@ public class Idle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!idling && idleCount <= 3)
-            idleTimer -= Time.deltaTime;
-        if(idleTimer <= 0 && !idling)
+        if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.normal)
         {
-            if(idleCount < 3)
-                PlayIdle();
-            else if(!sleeping)
+            if (!idling && idleCount <= 3)
+                idleTimer -= Time.deltaTime;
+            if (idleTimer <= 0 && !idling)
             {
-                GetComponentInChildren<Blink>().CloseEyes();
-                sleepBubblePart.Play();
-                sleeping = true;
-                idleCount++;
-                anim.SetInteger("IdleCounter", idleCount);
+                if (idleCount < 3)
+                    PlayIdle();
+                else if (!sleeping)
+                {
+                    GetComponentInChildren<Blink>().CloseEyes();
+                    sleepBubblePart.Play();
+                    sleeping = true;
+                    idleCount++;
+                    anim.SetInteger("IdleCounter", idleCount);
 
-                GetComponent<ChangeModel>().ChangeModelTo(1);
+                    GetComponent<ChangeModel>().ChangeModelTo(1);
+                }
             }
         }
     }
@@ -70,13 +73,16 @@ public class Idle : MonoBehaviour
     //used on its own when the idle is stopped only by the animation finishing
     public void StopIdle()
     {
-        sleepBubblePart.Stop();
-        sleepBubblePart.Clear();
-        idling = false;
-        sleeping = false;
-        anim.ResetTrigger("Idle");
-        idleTimer = startingIdleTimer;
-        GetComponent<ChangeModel>().ChangeModelTo(0);
+        if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.normal)
+        {
+            sleepBubblePart.Stop();
+            sleepBubblePart.Clear();
+            idling = false;
+            sleeping = false;
+            anim.ResetTrigger("Idle");
+            idleTimer = startingIdleTimer;
+            GetComponent<ChangeModel>().ChangeModelTo(0);
+        }
     }
 
     //used only when player starts moving in some way

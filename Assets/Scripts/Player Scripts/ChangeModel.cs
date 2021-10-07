@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ChangeModel : MonoBehaviour
 {
-    public List<Mesh> allCrockMeshes;
+    public List<SkinnedMeshRenderer> allCrockMeshes;
 
     SkinnedMeshRenderer mesh;
 
@@ -16,9 +16,11 @@ public class ChangeModel : MonoBehaviour
     /// <summary>
     /// Changes crock's model to the specified index
     /// </summary>
-    /// <param name="index">0 = regular; 1 = separated teeth; 2 = low poly</param>
+    /// <param name="index">0 = regular; 1 = separated teeth; 2 = stone form</param>
     public void ChangeModelTo(int index)
     {
-        mesh.sharedMesh = allCrockMeshes[index];
+        mesh.sharedMesh = allCrockMeshes[index].sharedMesh;
+
+        mesh.sharedMaterials = allCrockMeshes[index].sharedMaterials;
     }
 }

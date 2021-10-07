@@ -49,6 +49,9 @@ public class Attack : MonoBehaviour
     }
     public void AttackLogic()
     {
+        if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.transformed)
+            return;
+
         canAttack = PlayerManager.Instance.canMove &&
             PlayerManager.Instance.currentState == PlayerManager.PlayerState.normal &&
             attackDone && buttonUp;

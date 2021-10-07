@@ -9533,7 +9533,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7767221, y: 1}
+    m_SensorSize: {x: 1.7783018, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -42904,7 +42904,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7767221, y: 1}
+    m_SensorSize: {x: 1.7783018, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -53658,7 +53658,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e980767f86f07094ca68a9c34ab5c20b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 1046041963}
+  target: {fileID: 1732073739}
   dynamic: 1
 --- !u!23 &908002458
 MeshRenderer:
@@ -54618,7 +54618,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7767221, y: 1}
+    m_SensorSize: {x: 1.7783018, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -57131,8 +57131,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   allCrockMeshes:
-  - {fileID: -5523277661179574252, guid: 6ef29beb5cb07b447b289c02a88066e4, type: 3}
-  - {fileID: -1064613520607805775, guid: a0a51db196f9344448feb08ac73ccbd2, type: 3}
+  - {fileID: 4381454792350094727, guid: 6ef29beb5cb07b447b289c02a88066e4, type: 3}
+  - {fileID: -6382387393640462818, guid: a0a51db196f9344448feb08ac73ccbd2, type: 3}
+  - {fileID: -8385332107055829245, guid: 06e4ea7c75360124bab00efc99c6d3ff, type: 3}
 --- !u!114 &1046041973
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -57150,6 +57151,23 @@ MonoBehaviour:
     m_Bits: 8192
   climbSpeed: 3
   climbAccel: 2
+--- !u!114 &1046041975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1046041962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fed017cac6b0764bb38c33a84c7ca14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 1
+  turnSpeed: 1
+  jumpHeight: 0.5
+  animController: {fileID: 9100000, guid: 3c2748b987565cd4cb4d51ed59a224a4, type: 2}
+  mat: {fileID: 2100000, guid: 1e7ce54d1c6b8ba4fa4802f6f102961f, type: 2}
 --- !u!1 &1046656041
 GameObject:
   m_ObjectHideFlags: 0
@@ -80608,6 +80626,12 @@ Transform:
   m_Father: {fileID: 539039027}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!4 &1732073739 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5397302870785255742, guid: 842296e190d9d984aa25009283b55f94,
+    type: 3}
+  m_PrefabInstance: {fileID: 1818204747}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1734894721
 GameObject:
   m_ObjectHideFlags: 0
@@ -98984,6 +99008,7 @@ MonoBehaviour:
   currentHitSound: {fileID: 0}
   paused: 0
   currentState: 0
+  currentForm: 0
   canMove: 0
   hitSounds:
   - {fileID: 11400000, guid: 422592b55f975544c8098c6c685cdc5c, type: 2}

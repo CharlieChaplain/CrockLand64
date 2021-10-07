@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 6ef29beb5cb07b447b289c02a88066e4
+guid: 06e4ea7c75360124bab00efc99c6d3ff
 ModelImporter:
   serializedVersion: 26
   internalIDToNameTable: []
@@ -7,43 +7,8 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Belt
-    second: {fileID: 2100000, guid: 51998a31b7022374ba65b5c5314cd7fe, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Eyes
-    second: {fileID: 2100000, guid: 12301312de11b7242ba0938d1eceeda1, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: GoldTooth
-    second: {fileID: 2100000, guid: e31a0b62eb0b24641b7de6fcd9292a3e, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Nostril
-    second: {fileID: 2100000, guid: 773186922430546419e5e4a97bf54ea9, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Opaque
-    second: {fileID: 2100000, guid: 8244960fcb5d5f84a838b6192a5549a2, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: TransMat
-    second: {fileID: 2100000, guid: 7eb0cd213c75fe047bc5b4cce190e5c4, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Transparent
-    second: {fileID: 2100000, guid: 7eb0cd213c75fe047bc5b4cce190e5c4, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: VertexPainted
-    second: {fileID: 2100000, guid: d74dbd7912e81884a9d8e557663cc26d, type: 2}
+      name: Rock
+    second: {fileID: 2100000, guid: 1e7ce54d1c6b8ba4fa4802f6f102961f, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
