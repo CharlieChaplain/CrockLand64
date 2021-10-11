@@ -12,6 +12,8 @@ public class PlayerMove : MonoBehaviour
     public Animator anim;
     public Transform model;
 
+    private RuntimeAnimatorController animController;
+
     private Swim swim;
 
     private bool grounded;
@@ -90,6 +92,7 @@ public class PlayerMove : MonoBehaviour
         oldUpGravMult = upGravMult;
         oldMaxSpeed = maxSpeed;
         oldECSpeed = edgeCorrectionSpeed;
+        animController = anim.runtimeAnimatorController;
 
         swim = GetComponent<Swim>();
         stone = GetComponent<Form_Stone>();
@@ -177,6 +180,7 @@ public class PlayerMove : MonoBehaviour
         {
             case PlayerManager.PlayerForm.stone:
                 Move(stone.speed, stone.turnSpeed, canMove);
+                stone.stoneUpdate();
                 break;
             default:
                 break;
@@ -191,6 +195,14 @@ public class PlayerMove : MonoBehaviour
     {
         switch (form)
         {
+            case PlayerManager.PlayerForm.none:
+                PlayerManager.Instance.currentForm = PlayerManager.PlayerForm.none;
+                PlayerManager.Instance.currentState = PlayerManager.PlayerState.normal;
+                jumpHeight = oldJumpHeight;
+                currentFormJumpHeight = oldJumpHeight;
+                GetComponent<ChangeModel>().ChangeModelTo(0);
+                anim.runtimeAnimatorController = animController;
+                break;
             case PlayerManager.PlayerForm.stone:
                 PlayerManager.Instance.currentForm = PlayerManager.PlayerForm.stone;
                 PlayerManager.Instance.currentState = PlayerManager.PlayerState.transformed;
@@ -198,6 +210,7 @@ public class PlayerMove : MonoBehaviour
                 currentFormJumpHeight = stone.jumpHeight;
                 GetComponent<ChangeModel>().ChangeModelTo(2);
                 anim.runtimeAnimatorController = stone.animController;
+                stone.stoneInit();
                 break;
             default:
                 break;
@@ -216,8 +229,8 @@ public class PlayerMove : MonoBehaviour
             }
         }
 
-        //deals with crock changing forms from enemy attacks
-        if (other.transform.gameObject.CompareTag("FormChanger"))
+        //deals with crock changing forms from enemy attacks if crock is in normal form
+        if (PlayerManager.Instance.currentForm == PlayerManager.PlayerForm.none && other.transform.gameObject.CompareTag("FormChanger"))
         {
             ChangeForm(other.GetComponent<FormChangerInfo>().form);
         }

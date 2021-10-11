@@ -23,4 +23,14 @@ public class ChangeModel : MonoBehaviour
 
         mesh.sharedMaterials = allCrockMeshes[index].sharedMaterials;
     }
+
+    /// <summary>
+    /// Changes the texture of the material at the specified index
+    /// </summary>
+    /// <param name="index">The index in the mesh of the material to change</param>
+    /// <param name="newTex">the texture to changet to</param>
+    public void ChangeTexture(int index, Texture newTex)
+    {
+        mesh.materials[index].mainTexture = newTex;
+    }
 }
