@@ -58,10 +58,10 @@ public class MenuCursor : MonoBehaviour
     protected virtual IEnumerator MoveCursor(Vector3 targetPos)
     {
         Vector3 initPos = rectTransform.localPosition;
-        int numFrames = 15;
-        for(int i = 0; i < numFrames; i++)
+        float seconds = 0.2f;
+        for(float f = 0; f < seconds; f+= Time.unscaledDeltaTime)
         {
-            rectTransform.localPosition = Vector3.Lerp(initPos, targetPos, Mathf.SmoothStep(0, 1f, i / (float)numFrames));
+            rectTransform.localPosition = Vector3.Lerp(initPos, targetPos, Mathf.SmoothStep(0, 1f, f / seconds));
             yield return null;
         }
 

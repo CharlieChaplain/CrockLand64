@@ -8,6 +8,9 @@ public class TreasureMenu : Menu
 
     public TreasureCursor tCursor;
 
+    public PlaySound SOOpen;
+    public PlaySound SOClose;
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -80,9 +83,11 @@ public class TreasureMenu : Menu
     {
         base.Enter();
         treasureAnim.SetBool("Visible", true);
+        SOOpen.Play(CameraManager.Instance.sceneCam.transform.position);
     }
     public override void Leave()
     {
         treasureAnim.SetBool("Visible", false);
+        SOClose.Play(CameraManager.Instance.sceneCam.transform.position);
     }
 }

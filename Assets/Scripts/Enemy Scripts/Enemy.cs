@@ -140,7 +140,8 @@ public class Enemy : MonoBehaviour
         float currentTimeScale = Time.timeScale;
         Time.timeScale = 0.1f;
         yield return new WaitForSecondsRealtime(0.2f);
-        Time.timeScale = currentTimeScale;
+        //Time.timeScale = currentTimeScale;
+        Time.timeScale = 1f;
     }
 
     protected IEnumerator wobbleScale() //will scale the enemy in a sinusoidal manner 

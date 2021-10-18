@@ -104,13 +104,13 @@ public class TreasureCursor : MenuCursor
     {
         Vector3 initPos = rectTransform.localPosition;
         Vector3 bracketInitPos = rightBracket.localPosition;
-        int numFrames = 10;
-        for (int i = 0; i < numFrames; i++)
+        float seconds = 0.1f;
+        for (float f = 0; f < seconds; f+= Time.unscaledDeltaTime)
         {
-            rectTransform.localPosition = Vector3.Lerp(initPos, targetPos, Mathf.SmoothStep(0, 1f, i / (float)numFrames));
+            rectTransform.localPosition = Vector3.Lerp(initPos, targetPos, Mathf.SmoothStep(0, 1f, f / seconds));
 
-            leftBracket.localPosition = Vector3.Lerp(-bracketInitPos, new Vector3(-width / 2f, 0, 0), Mathf.SmoothStep(0, 1f, i / (float)numFrames));
-            rightBracket.localPosition = Vector3.Lerp(bracketInitPos, new Vector3(width / 2f, 0, 0), Mathf.SmoothStep(0, 1f, i / (float)numFrames));
+            leftBracket.localPosition = Vector3.Lerp(-bracketInitPos, new Vector3(-width / 2f, 0, 0), Mathf.SmoothStep(0, 1f, f / seconds));
+            rightBracket.localPosition = Vector3.Lerp(bracketInitPos, new Vector3(width / 2f, 0, 0), Mathf.SmoothStep(0, 1f, f / seconds));
 
             yield return null;
         }

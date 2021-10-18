@@ -211,6 +211,8 @@ public class Gorgo_Logic : Enemy
 
     IEnumerator Die()
     {
+        Destroy(aura);
+
         hurtTimer = 1000f; //will prevent movement
 
         for (float t = 0; t < .1f; t += Time.deltaTime)
