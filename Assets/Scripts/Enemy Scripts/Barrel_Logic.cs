@@ -8,6 +8,9 @@ public class Barrel_Logic : Enemy
 
     bool destroyed = false;
 
+    public Transform waterCheck;
+    public LayerMask waterMask;
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -18,7 +21,8 @@ public class Barrel_Logic : Enemy
     // Update is called once per frame
     protected override void Update()
     {
-        Move();
+        if(!destroyed)
+            Move();
 
         //modelObj.GetComponent<MeshCollider>().enabled = !carried || !(thrown && !grounded);
         modelObj.GetComponent<MeshCollider>().enabled = grounded;
@@ -29,14 +33,34 @@ public class Barrel_Logic : Enemy
     void Move()
     {
         CheckGrounded();
-
+        CheckWater();
         if (grounded)
             velocity = Vector3.zero;
+
+        //will kill the enemy if it hits a wall while being heavy thrown.
+        if (heavyThrown)
+        {
+            SphereCollider sphCol = GetComponent<SphereCollider>(); //this collider can be different for each enemy. If not, then move this method to base class
+            if (Physics.CheckSphere(transform.position + sphCol.center, sphCol.radius, groundMask))
+            {
+                destroyed = true;
+                Die();
+            }
+        }
 
         if (!carried && !destroyed)
         {
             ApplyGravity();
             controller.Move(velocity * Time.deltaTime);
+        }
+    }
+    //checks if barrel is in water at the specified location (ie underwater), so it can be destroyed
+    void CheckWater()
+    {
+        if (Physics.CheckSphere(waterCheck.position, 0.4f, waterMask, QueryTriggerInteraction.Collide))
+        {
+            destroyed = true;
+            Die();
         }
     }
 
@@ -48,26 +72,21 @@ public class Barrel_Logic : Enemy
             PlaySound hurtSound = null;
             if (other.gameObject.layer == 9) //layer 9 = player
                 hurtSound = PlayerManager.Instance.currentHitSound;
+            hurtSound.Play(transform.position);
 
-            StartCoroutine(Die());
+            Die();
 
             destroyed = true;
         }
     }
 
-    IEnumerator Die()
+    void Die()
     {
-        for (float t = 0; t < .05f; t += Time.deltaTime)
-        {
-            transform.localScale = Vector3.Scale(transform.localScale, new Vector3(1.02f, 0.98f, 1.02f));
-            yield return null;
-        }
-
         foreach(ParticleSystem parts in dieParts)
         {
             parts.GetComponent<ParticleSystem>().Play();
         }
-
+        dieSound.Play(transform.position);
         ToHideOnDeath.SetActive(false);
         GetComponent<CharacterController>().enabled = false;
 

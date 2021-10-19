@@ -184,13 +184,9 @@ public class Attack : MonoBehaviour
         }
 
         //will drop the enemy if crock crouches
-        if(PlayerManager.Instance.currentState == PlayerManager.PlayerState.crouching)
+        if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.crouching)
         {
-            throwVector = transform.forward;
-            throwVector.y = 0.8f;
-            throwVector.Normalize();
-
-            ThrowRelease();
+            DropEnemy();
         }
     }
 
@@ -205,6 +201,8 @@ public class Attack : MonoBehaviour
         throwing = false;
         carrying = false;
 
+        anim.SetBool("Carrying", carrying);
+
         if (PlayerManager.Instance.currentState != PlayerManager.PlayerState.crouching)
         {
             PlayerManager.Instance.currentState = PlayerManager.PlayerState.normal;
@@ -213,6 +211,19 @@ public class Attack : MonoBehaviour
 
         StopAttack();
         throwVectorMultiplier = 1f;
+    }
+
+    //called when crock needs to drop an enemy without tossing. Through crouching or dropping into water
+    public void DropEnemy()
+    {
+        if (carryTarget != null)
+        {
+            throwVector = transform.forward;
+            throwVector.y = 0.8f;
+            throwVector.Normalize();
+
+            ThrowRelease();
+        }
     }
 
     public void StopAttack()

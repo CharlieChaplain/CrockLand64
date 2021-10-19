@@ -18,6 +18,7 @@ public class Enemy : MonoBehaviour
     protected bool felled;
     protected bool carried; //when the enemy is being carried
     protected bool thrown; //after enemy is thrown and before it hits the ground
+    protected bool heavyThrown; //if the enemy was thrown with a heavy throw. It determines if enemies will die on walls
     protected Vector3 velocity;
 
     public Animator anim;
@@ -30,6 +31,8 @@ public class Enemy : MonoBehaviour
     public GameObject modelObj;
 
     protected float standupTimer = 0;
+
+    public PlaySound dieSound; //the sound to play when the enemy dies
 
     // Start is called before the first frame update
     protected virtual void Start()
@@ -58,7 +61,7 @@ public class Enemy : MonoBehaviour
     public void Throw(Vector3 force)
     {
         velocity = force;
-        StartCoroutine("heavyThrow");
+        StartCoroutine(heavyThrow());
     }
 
     protected void StandUp()
@@ -110,6 +113,8 @@ public class Enemy : MonoBehaviour
     protected virtual void CheckGrounded()
     {
         grounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundMask);
+        if(grounded)
+            heavyThrown = false;
     }
 
     public void SetCarried(bool _carried)
@@ -124,10 +129,15 @@ public class Enemy : MonoBehaviour
     {
         felled = _felled;
     }
+    public bool GetHeavyThrown()
+    {
+        return heavyThrown;
+    }
 
     //this coroutine disables gravity for the enemy for a time proportionate to the heavy throw chargeup.
     protected IEnumerator heavyThrow()
     {
+        heavyThrown = true;
         gravAffected = false;
         float time = Mathf.Max((velocity.magnitude - 25f), 0) / 250f;
         yield return new WaitForSeconds(time);

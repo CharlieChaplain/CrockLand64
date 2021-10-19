@@ -75,6 +75,9 @@ public class Swim : MonoBehaviour
         //currentAngleEulers.y = currentYRotation;
         //targetAngleEulers.y = currentYRotation;
 
+        //drops enemy if crock is carrying one
+        GetComponent<Attack>().DropEnemy();
+
         currentWaterState = WaterStates.paddling;
 
         velocity = (_velocity * 0.5f) + (transform.forward * 2f);
