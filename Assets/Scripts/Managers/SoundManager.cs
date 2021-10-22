@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
+    public float soundEffectVolume; //set by options menu, sent to sound objects when they play sound effects
+
     public static SoundManager Instance { get; private set; }
 
     private void Awake()
@@ -21,12 +23,6 @@ public class SoundManager : MonoBehaviour
 
     public void KillSoundObject(GameObject objectToKill, float timeTilKill)
     {
-        StartCoroutine(KillAfterSeconds(objectToKill, timeTilKill));
-    }
-
-    IEnumerator KillAfterSeconds(GameObject objectToKill, float seconds)
-    {
-        yield return new WaitForSeconds(seconds);
-        GameObject.Destroy(objectToKill);
+        Destroy(objectToKill, timeTilKill);
     }
 }

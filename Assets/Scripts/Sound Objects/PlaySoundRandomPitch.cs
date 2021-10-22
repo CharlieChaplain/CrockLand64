@@ -14,6 +14,7 @@ public class PlaySoundRandomPitch : PlaySound
         soundObj.transform.position = position;
         soundObj.AddComponent<AudioSource>();
         soundObj.GetComponent<AudioSource>().clip = sound;
+        soundObj.GetComponent<AudioSource>().volume = SoundManager.Instance.soundEffectVolume;
         soundObj.GetComponent<AudioSource>().pitch = Random.Range(1f - pitchVariance, 1f + pitchVariance);
         soundObj.GetComponent<AudioSource>().Play();
         SoundManager.Instance.KillSoundObject(soundObj, soundObj.GetComponent<AudioSource>().clip.length + 0.1f);
