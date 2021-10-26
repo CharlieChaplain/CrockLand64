@@ -8,7 +8,7 @@ public class MenuCursor : MonoBehaviour
     public int currentOption; //the option the cursor currently sits on
 
     protected RectTransform rectTransform;
-    Vector2 PosAtZeroY; //where the pointer is at when its y value is not altered.
+    protected Vector2 PosAtZeroY; //where the pointer is at when its y value is not altered.
 
     private void Start()
     {

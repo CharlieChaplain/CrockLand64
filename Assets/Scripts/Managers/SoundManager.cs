@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
+    public float musicVolume; //set by options menu, sent to sound objects when they play music
     public float soundEffectVolume; //set by options menu, sent to sound objects when they play sound effects
 
     public static SoundManager Instance { get; private set; }

@@ -24,13 +24,14 @@ public class OptionsMenu : Menu
         {
             switch (cursor.currentOption)
             {
-                case 0:
+                case 0: //Display
                     break;
-                case 1:
+                case 1: //Audio
+                    pause.ChangeMenu(3);
                     break;
-                case 2:
+                case 2: //Controls
                     break;
-                case 3:
+                case 3: //Back
                     pause.ChangeMenu(0);
                     break;
                 default:
