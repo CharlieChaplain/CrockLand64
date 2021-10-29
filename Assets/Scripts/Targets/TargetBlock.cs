@@ -12,6 +12,8 @@ public class TargetBlock : MonoBehaviour
     public TargetTarget tTarget;
     public Texture[] texs;
 
+    public PlaySound activateSound;
+
     private void Start()
     {
         anim = GetComponentInChildren<Animator>();
@@ -36,7 +38,7 @@ public class TargetBlock : MonoBehaviour
         pressed = true;
         mat.mainTexture = texs[1];
         part.Play();
-
+        activateSound.Play(transform.position);
         tTarget.GetComponent<TargetTarget>().Trigger();
     }
 }
