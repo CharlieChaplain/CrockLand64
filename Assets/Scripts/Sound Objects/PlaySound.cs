@@ -10,6 +10,8 @@ public class PlaySound : ScriptableObject
 
     public float volume;
 
+    public bool loop;
+
     /// <param name="position">The position at which the sound is played</param>
     public virtual void Play(Vector3 position)
     {
@@ -18,7 +20,19 @@ public class PlaySound : ScriptableObject
         soundObj.AddComponent<AudioSource>();
         soundObj.GetComponent<AudioSource>().clip = sound;
         soundObj.GetComponent<AudioSource>().volume = SoundManager.Instance.soundEffectVolume;
+        soundObj.GetComponent<AudioSource>().loop = loop;
+        soundObj.GetComponent<AudioSource>().maxDistance = 30f;
+        soundObj.GetComponent<AudioSource>().rolloffMode = AudioRolloffMode.Linear;
+        soundObj.GetComponent<AudioSource>().spatialBlend = 1f;
         soundObj.GetComponent<AudioSource>().Play();
-        SoundManager.Instance.KillSoundObject(soundObj, soundObj.GetComponent<AudioSource>().clip.length + 0.1f);
+        if (loop)
+            SoundManager.Instance.loopingSounds.Add(this);
+        else
+            SoundManager.Instance.KillSoundObject(soundObj, soundObj.GetComponent<AudioSource>().clip.length + 0.1f);
+    }
+
+    public virtual void ChangeVol(float vol)
+    {
+        soundObj.GetComponent<AudioSource>().volume = vol;
     }
 }
