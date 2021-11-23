@@ -241,21 +241,26 @@ public class PlayerMove : MonoBehaviour
         if (PlayerManager.Instance.canMove && other.gameObject.CompareTag("NPC"))
         {
             buttonAlert.SetActive(true);
+            buttonAlert.GetComponent<Animator>().SetBool("Active", true);
 
             if (Input.GetButtonDown("Punch"))
             {
                 other.GetComponent<NPC>().Engage();
 
-                buttonAlert.SetActive(false);
+                StartCoroutine(ButtonAlertDisappear());
             }
         }
         else
+        {
             buttonAlert.SetActive(false);
+        }
     }
     private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.CompareTag("NPC"))
-            buttonAlert.SetActive(false);
+        {
+            StartCoroutine(ButtonAlertDisappear());
+        }
     }
     private void OnDrawGizmosSelected()
     {
@@ -776,5 +781,12 @@ public class PlayerMove : MonoBehaviour
     {
         yield return new WaitForSeconds(0.1f);
         ungroundTimerUp = true;
+    }
+
+    IEnumerator ButtonAlertDisappear()
+    {
+        buttonAlert.GetComponent<Animator>().SetBool("Active", false);
+        yield return new WaitForSeconds(0.1f);
+        buttonAlert.SetActive(false);
     }
 }

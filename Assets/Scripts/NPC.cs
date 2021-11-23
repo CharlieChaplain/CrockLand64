@@ -24,7 +24,7 @@ public class NPC : MonoBehaviour
             crockSpot.position = hit.point;
     }
 
-    public void Engage()
+    public virtual void Engage()
     {
         PlayerManager.Instance.canMove = false;
         PlayerManager.Instance.player.GetComponent<PlayerMove>().SetVelocity(Vector3.zero);
@@ -39,7 +39,7 @@ public class NPC : MonoBehaviour
         DialogueManager.Instance.StartDialogue(dialogue);
     }
 
-    public void Disengage()
+    public virtual void Disengage()
     {
         PlayerManager.Instance.canMove = true;
 
@@ -47,7 +47,7 @@ public class NPC : MonoBehaviour
         CameraManager.Instance.SetCamera(originalCam.gameObject, 1.5f);
     }
 
-    public void ToggleTalking(bool speak)
+    public virtual void ToggleTalking(bool speak)
     {
         anim.SetBool("Talking", speak);
     }

@@ -29,6 +29,7 @@ public class DialogueManager : MonoBehaviour
     GameObject dialogueBox;
     Animator dialogueAnim;
     TextMeshProUGUI dialogueText;
+    VertexJitter vertJitter;
     GameObject nextArrow;
     Image portrait;
 
@@ -46,6 +47,7 @@ public class DialogueManager : MonoBehaviour
 
         dialogueAnim = dialogueBox.GetComponent<Animator>();
         dialogueText = dialogueBox.GetComponentInChildren<TextMeshProUGUI>();
+        vertJitter = dialogueText.gameObject.GetComponent<VertexJitter>();
         nextArrow = GameObject.Find("NextArrow");
         nextArrow.SetActive(false);
 
@@ -93,7 +95,11 @@ public class DialogueManager : MonoBehaviour
         string sentence = sentences.Dequeue();
 
         //camera change::   _CAM-0-0    where first number is camera number in Dialogue camera array and second is lerp time in milliseconds
-        //portrait change::   _POR-0    where the number is portrait number in Dialogue portrait array
+        //portrait change:: _POR-0      where the number is portrait number in Dialogue portrait array
+        //jittering text::  _JIT        causes the text of that box to jitter
+        //large text::      _BIG        makes fontsize twice as large
+        //jitter and big::  _J&B        combines both effects of _JIT and _BIG
+        //text speed::      _#.#        changes the speed of the text based on a 1 decimal precise float
         if (sentence.Substring(0, 4) == "_CAM")
         {
             string[] parameters = sentence.Split('-');
@@ -118,16 +124,71 @@ public class DialogueManager : MonoBehaviour
 
             NextSentence();
         }
+        else if(sentence.Substring(0, 4) == "_JIT")
+        {
+            //changes vertJitter's parameters so it will jitter appropriately
+            vertJitter.AngleMultiplier = 1f;
+            vertJitter.CurveScale = 5f;
+            //sets font size
+            dialogueText.fontSize = 18f;
+
+            sentence = sentence.Substring(4);
+            PrepareDialogue(sentence);
+        }
+        else if (sentence.Substring(0, 4) == "_BIG")
+        {
+            //changes vertJitter's parameters so it wont jitter
+            vertJitter.AngleMultiplier = 0;
+            vertJitter.CurveScale = 0;
+            //sets font size
+            dialogueText.fontSize = 36f;
+
+            sentence = sentence.Substring(4);
+            PrepareDialogue(sentence);
+        }
+        else if (sentence.Substring(0, 4) == "_J&B")
+        {
+            //changes vertJitter's parameters so it will jitter appropriately
+            vertJitter.AngleMultiplier = 1f;
+            vertJitter.CurveScale = 5f;
+            //sets font size
+            dialogueText.fontSize = 36f;
+
+            sentence = sentence.Substring(4);
+            PrepareDialogue(sentence);
+        }
         else
         {
-            nextArrow.SetActive(false);
-            currentDialogue.npc.ToggleTalking(true);
-            
-            StartCoroutine("Type", sentence);
+            //changes vertJitter's parameters so it wont jitter
+            vertJitter.AngleMultiplier = 0;
+            vertJitter.CurveScale = 0;
+            //sets font size
+            dialogueText.fontSize = 18f;
+
+            PrepareDialogue(sentence);
         }
     }
 
-    void EndDialogue()
+    //no matter which prefix the sentence has on it, it will go through these steps before being typed out
+    void PrepareDialogue(string sentence)
+    {
+        float textSpeed = 1f;
+        if(sentence.Substring(0, 1) == "_")
+        {
+            textSpeed = float.Parse(sentence.Substring(1, 3));
+            sentence = sentence.Substring(4);
+        }
+
+        nextArrow.SetActive(false);
+        currentDialogue.npc.ToggleTalking(true);
+
+        //Starts the typing coroutine
+        dialogueText.color = new Color(255f, 255f, 255f, 0);
+        dialogueText.text = sentence;
+        dialogueText.gameObject.GetComponent<VertexColorChanger>().StartColorChanger(textSpeed);
+    }
+
+    public void EndDialogue()
     {
         dialogueAnim.SetBool("Visible", false);
         talking = false;
@@ -141,6 +202,19 @@ public class DialogueManager : MonoBehaviour
 
     }
 
+    public void FinishedTyping()
+    {
+        displayFinished = true;
+        currentDialogue.npc.ToggleTalking(false);
+        nextArrow.SetActive(true);
+    }
+
+    public bool DisplayFinished()
+    {
+        return displayFinished;
+    }
+
+    /* -----------OLD TYPE COROUTINE-------------  new type coroutine just loops through already present text and changes alpha from 0 to 1
     //types out the messages character by character
     IEnumerator Type(string sentence)
     {
@@ -165,4 +239,5 @@ public class DialogueManager : MonoBehaviour
         currentDialogue.npc.ToggleTalking(false);
         nextArrow.SetActive(true);
     }
+    */
 }
