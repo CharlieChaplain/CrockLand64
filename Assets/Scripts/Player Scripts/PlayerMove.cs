@@ -744,6 +744,10 @@ public class PlayerMove : MonoBehaviour
     {
         return grounded;
     }
+    public bool GetJumping()
+    {
+        return jumping;
+    }
     public bool GetHiJumping()
     {
         return hiJumping;

@@ -51,7 +51,8 @@ public class Charge : MonoBehaviour
         //counts down and eventually ends the charge after an amount of time
         if(charging)
         {
-            chargeTimer -= Time.deltaTime;
+            if(playerMove.GetGrounded() && !playerMove.GetJumping())
+                chargeTimer -= Time.deltaTime;
             if (chargeTimer <= 0 && playerMove.GetGrounded())
             {
                 StopCharge();
@@ -62,6 +63,22 @@ public class Charge : MonoBehaviour
         if(Input.GetAxis("Charge") == 0)
         {
             pressed = false;
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (charging)
+        {
+            if (CheckCollisions())
+            {
+                Vector3 newV = (-transform.forward + (transform.up * 10f)).normalized * 10f;
+                playerMove.SetSpeed(-12f);
+                playerMove.SetVelocity(newV);
+                StopCharge();
+                StartCoroutine("Bounce");
+                return;
+            }
         }
     }
 
@@ -82,8 +99,8 @@ public class Charge : MonoBehaviour
 
             Vector3 moveDir = Quaternion.Euler(0f, angle, 0f) * Vector3.forward;
         }
-        
-        //breaks free if crock collides with anything
+        //breaks free if crock collides with anything 
+        /*
         if (CheckCollisions())
         {
             Vector3 newV = (-transform.forward + (transform.up * 10f)).normalized * 10f;
@@ -92,7 +109,7 @@ public class Charge : MonoBehaviour
             StopCharge();
             StartCoroutine("Bounce");
             return;
-        }
+        }*/
 
         controller.Move(transform.forward * chargeSpeed * Time.deltaTime);
         playerMove.SetSpeed(chargeSpeed); //done so playerMove knows how fast crock is going incase charge is interrupted
@@ -126,6 +143,7 @@ public class Charge : MonoBehaviour
         HurtBoxInfo.ToggleHurtBox(GetComponent<Attack>().ChargeCollider, false);
 
         charging = false;
+        anim.SetBool("Charging", false);
         trail.enabled = false;
         trail.Clear();
         PlayerManager.Instance.currentState = PlayerManager.PlayerState.normal;
@@ -138,7 +156,14 @@ public class Charge : MonoBehaviour
     //checks any sideways collisions to bounce back
     bool CheckCollisions()
     {
-        return Physics.CheckSphere(chargeCheck.position, chargeCheckRadius, chargeCheckMask);
+        /* debug
+        for(int i = 0; i < 30; i++)
+        {
+            Vector3 newDir = Quaternion.Euler(Random.Range(0, 360f), Random.Range(0, 360f), Random.Range(0, 360f)) * Vector3.up;
+            newDir *= chargeCheckRadius;
+            Debug.DrawLine(chargeCheck.position, chargeCheck.position + newDir, Color.red);
+        }*/
+        return Physics.CheckSphere(chargeCheck.position, chargeCheckRadius, chargeCheckMask, QueryTriggerInteraction.Ignore);
     }
 
     //this coroutine merely times out a charge if it goes uninterrupted
@@ -165,5 +190,6 @@ public class Charge : MonoBehaviour
         {
             yield return null;
         }
+        anim.ResetTrigger("Bounce");
     }
 }

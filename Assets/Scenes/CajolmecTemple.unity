@@ -5698,6 +5698,56 @@ PrefabInstance:
       propertyPath: cam
       value: 
       objectReference: {fileID: 918233849}
+    - target: {fileID: 6890181957258384840, guid: 842296e190d9d984aa25009283b55f94,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6890181957258384840, guid: 842296e190d9d984aa25009283b55f94,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6890181957258384840, guid: 842296e190d9d984aa25009283b55f94,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3224360635976721845, guid: 842296e190d9d984aa25009283b55f94,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 3224360634952295686, guid: 842296e190d9d984aa25009283b55f94,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 6890181957258384844, guid: 842296e190d9d984aa25009283b55f94,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 6890181957397201958, guid: 842296e190d9d984aa25009283b55f94,
+        type: 3}
+      propertyPath: chargeCheckMask.m_Bits
+      value: 1281
+      objectReference: {fileID: 0}
+    - target: {fileID: 6890181957810721571, guid: 842296e190d9d984aa25009283b55f94,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 6890181958924755391, guid: 842296e190d9d984aa25009283b55f94,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 6890181958447226235, guid: 842296e190d9d984aa25009283b55f94,
+        type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 842296e190d9d984aa25009283b55f94, type: 3}
 --- !u!1 &457053628
@@ -20692,7 +20742,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7778823, y: 1}
+    m_SensorSize: {x: 1.7773585, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -20962,7 +21012,7 @@ PrefabInstance:
     - target: {fileID: 7910293500944311825, guid: 178f3413f93c14e4f8b10e6a5687ae6f,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.015764358
+      value: -0.015764356
       objectReference: {fileID: 0}
     - target: {fileID: 7910293500944311825, guid: 178f3413f93c14e4f8b10e6a5687ae6f,
         type: 3}
@@ -26123,7 +26173,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7778823, y: 1}
+    m_SensorSize: {x: 1.7773585, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -38497,7 +38547,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7778823, y: 1}
+    m_SensorSize: {x: 1.7773585, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -64072,7 +64122,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.7778823, y: 1}
+    m_SensorSize: {x: 1.7773585, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
