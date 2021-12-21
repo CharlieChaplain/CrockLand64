@@ -76,6 +76,8 @@ public class PlayerMove : MonoBehaviour
     public float waterCheckRadius;
     public LayerMask waterMask;
 
+    public PlaySound jumpSound;
+
     public GameObject buttonAlert; //shows up when crock can do things with a button
 
     Form_Stone stone;
@@ -104,7 +106,7 @@ public class PlayerMove : MonoBehaviour
 
         CheckGrounded();
         CheckSliding();
-        CheckSwimming();
+        //CheckSwimming();
         
         switch (PlayerManager.Instance.currentState)
         {
@@ -507,7 +509,7 @@ public class PlayerMove : MonoBehaviour
         else
         {
             model.up = Vector3.up;
-            model.forward = Vector3.Cross(transform.right, model.up);
+            model.forward = Vector3.Cross(transform.right, Vector3.up);
         }
 
         //animation variable connection
@@ -557,7 +559,7 @@ public class PlayerMove : MonoBehaviour
             crouchPressed = false;
     }
 
-    void CheckSwimming()
+    void EnterWater()
     {
         if(Physics.CheckSphere(waterCheck.position, waterCheckRadius, waterMask, QueryTriggerInteraction.Collide))
         {
@@ -693,6 +695,7 @@ public class PlayerMove : MonoBehaviour
             anim.SetTrigger("Jump");
             velocity.y = Mathf.Sqrt(jumpHeight * -2.0f * Physics.gravity.y * gravityMult);
             jumping = true;
+            jumpSound.Play(transform.position);
 
             ungroundTimerUp = false;
             StartCoroutine("UngroundTimer");
@@ -734,7 +737,7 @@ public class PlayerMove : MonoBehaviour
         waist.rotation *= Quaternion.Euler(0f, 0f, angleToLean);
     }
 
-    void SetControllerDimensions(Vector2 stuff)
+    public void SetControllerDimensions(Vector2 stuff)
     {
         controller.center = new Vector3(0, stuff.x, 0);
         controller.height = stuff.y;

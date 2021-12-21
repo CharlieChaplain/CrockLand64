@@ -6,6 +6,8 @@ public class Swim : MonoBehaviour
 {
     Transform cam; //camera
 
+    PlayerMove playerMove;
+
     Vector3 targetVelocity;
     Vector3 velocity;
 
@@ -50,6 +52,8 @@ public class Swim : MonoBehaviour
 
     public GameObject sploosh;
 
+    int prevMusicIndex; //used for changing the music when diving and resurfacing
+
     private enum WaterStates
     {
         paddling,
@@ -61,20 +65,17 @@ public class Swim : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         anim = GetComponentInChildren<Animator>();
-        cam = GetComponent<PlayerMove>().cam;
+        playerMove = GetComponent<PlayerMove>();
+        cam = playerMove.cam;
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         CheckUnderwater();
     }
     public void EnterWater(float currentYRotation, Vector3 _velocity)
     {
-        //currentAngleEulers = targetAngleEulers = Vector3.zero;
-        //currentAngleEulers.y = currentYRotation;
-        //targetAngleEulers.y = currentYRotation;
-
         //drops enemy if crock is carrying one
         GetComponent<Attack>().DropEnemy();
 
@@ -85,7 +86,7 @@ public class Swim : MonoBehaviour
         transform.rotation = Quaternion.LookRotation(velocity.normalized, Vector3.up);
 
         //large splash if crock is moving downwards quickly
-        if(velocity.y < -2f)
+        if (velocity.y < -2f)
         {
             enterWater.Play(transform.position);
             partBubblesBurst.Play();
@@ -98,7 +99,7 @@ public class Swim : MonoBehaviour
             splooshRay.origin = splooshRay.GetPoint(5f);
             splooshRay.direction *= -1f;
 
-            if(Physics.Raycast(splooshRay, out hit, 5f, waterMask, QueryTriggerInteraction.Collide))
+            if (Physics.Raycast(splooshRay, out hit, 5f, waterMask, QueryTriggerInteraction.Collide))
             {
                 splooshPos.y = hit.transform.position.y + (hit.transform.localScale.y / 2f);
             }
@@ -116,6 +117,7 @@ public class Swim : MonoBehaviour
             surface.Play(transform.position);
             partWake.Play();
         }
+
     }
 
     public void RootSwimMove()
@@ -229,7 +231,7 @@ public class Swim : MonoBehaviour
             paddled = false;
         }
 
-        if(velocity == Vector3.zero)
+        if (velocity == Vector3.zero)
         {
             //emits less particles if staying still
             var partWakeEmission = partWake.emission;
@@ -247,7 +249,6 @@ public class Swim : MonoBehaviour
         if (Input.GetAxis("Punch") > 0 && !paddled)
         {
             currentWaterState = WaterStates.diving;
-            //StartCoroutine("DiveCo");
             Dive();
         }
     }
@@ -258,25 +259,28 @@ public class Swim : MonoBehaviour
         if (Physics.CheckSphere(waterCheck.position, waterCheckRadius, waterMask, QueryTriggerInteraction.Collide))
         {
             //--------------------IN WATER------------------
+            if (!inWater)
+                EnterWater(transform.rotation.eulerAngles.y, GetComponent<PlayerMove>().GetVelocity());
+
             inWater = true;
 
 
             if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.swimming)
             {
+                Debug.DrawLine(waterCheck.position, waterCheck.position + (Vector3.up * 2f * waterCheckRadius) + (Vector3.up * .1f), Color.red);
                 //secondary check to see if player is at the top of the water. This sphere is above the previous sphere
-                if (!Physics.CheckSphere(waterCheck.position + (Vector3.up * 2f * waterCheckRadius) + (Vector3.up * 0f),
+                if (!Physics.CheckSphere(waterCheck.position + (Vector3.up * 2f * waterCheckRadius) + (Vector3.up * .1f),
                             waterCheckRadius, waterMask, QueryTriggerInteraction.Collide))
                 {
                     if (underwater && currentWaterState == WaterStates.diving)
                     {
                         currentWaterState = WaterStates.paddling;
-                        //StartCoroutine("SurfaceCo");
                         Surface();
                     }
 
                     velocity.y = 0;
 
-                    if (underwater == true)
+                    if (underwater)
                     {
                         partWake.Play();
                         partBubbles.Stop();
@@ -286,7 +290,7 @@ public class Swim : MonoBehaviour
                 }
                 else
                 {
-                    if(underwater == false)
+                    if (!underwater)
                     {
                         partWake.Stop();
                         partBubbles.Play();
@@ -318,7 +322,7 @@ public class Swim : MonoBehaviour
         anim.SetTrigger("Stroke");
         underwaterSwoosh.Play(transform.position);
 
-        Vector3 direction = Quaternion.Euler(-30f, 0, 0) * transform.forward;
+        Vector3 direction = Quaternion.Euler(30f, transform.rotation.eulerAngles.y, 0) * Vector3.forward;
         velocity = strokeSpeed * direction;
         targetVelocity = velocity;
 
@@ -328,38 +332,15 @@ public class Swim : MonoBehaviour
         //targetAngleEulers.y = transform.rotation.eulerAngles.y;
 
         currentAngleEulers = targetAngleEulers = transform.rotation.eulerAngles;
-    }
-    IEnumerator DiveCo()
-    {
-        PlayerManager.Instance.canMove = false;
 
-
-        //Quaternion targetRotation = transform.rotation;
-        Quaternion targetRotation = Quaternion.Euler(30f, 0, 0) * transform.rotation;
-
-        float rotateStep = 150f * Time.deltaTime;
-
-        anim.SetTrigger("Stroke");
-
-
-        for (float f = 0; f < 0.6f; f += Time.deltaTime)
-        {
-            yield return null;
-            controller.Move(targetRotation * Vector3.forward * strokeSpeed * Time.deltaTime);
-
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotateStep);
-        }
-
-        currentAngleEulers = transform.rotation.eulerAngles;
-        targetAngleEulers = currentAngleEulers;
-
-        PlayerManager.Instance.canMove = true;
+        //changes music to going underwater
+        SoundManager.Instance.music.ChangeMusic(1);
+        prevMusicIndex = SoundManager.Instance.music.GetSourceIndex();
     }
 
     void Surface()
     {
         anim.SetTrigger("Stroke");
-        //underwaterSwoosh.Play(transform.position);
         surface.Play(transform.position);
 
         transform.rotation = Quaternion.Euler(0, currentAngleEulers.y, 0);
@@ -369,31 +350,7 @@ public class Swim : MonoBehaviour
         direction.Normalize();
         targetVelocity = velocity = direction * paddleSpeed;
 
-        //transform.forward = velocity;
-
-        //Debug.Break();
-    }
-
-    IEnumerator SurfaceCo()
-    {
-        Debug.Log("hello");
-
-        PlayerManager.Instance.canMove = false;
-
-        Quaternion targetRotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
-
-        float rotateStep = 250f * Time.deltaTime;
-
-        anim.SetTrigger("Stroke");
-
-        while (transform.rotation.eulerAngles.x > 0.01f || transform.rotation.eulerAngles.x < -0.01f)
-        {
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotateStep);
-            yield return null;
-        }
-
-        velocity = Vector3.zero;
-
-        PlayerManager.Instance.canMove = true;
+        //changes music to normal
+        SoundManager.Instance.music.ChangeMusic(prevMusicIndex);
     }
 }

@@ -9,6 +9,8 @@ public class SoundManager : MonoBehaviour
 
     public List<PlaySound> loopingSounds; //gets added to by any looping playsounds so they can be accessed to change volume
 
+    public Music music;
+
     public static SoundManager Instance { get; private set; }
 
     private void Awake()
@@ -24,6 +26,11 @@ public class SoundManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        music = GameObject.Find("Main Camera/Music").GetComponent<Music>();
+    }
+
     public void KillSoundObject(GameObject objectToKill, float timeTilKill)
     {
         Destroy(objectToKill, timeTilKill);
@@ -35,5 +42,10 @@ public class SoundManager : MonoBehaviour
         {
             SO.ChangeVol(soundEffectVolume);
         }
+    }
+
+    public void ChangeMusic(int index)
+    {
+        music.ChangeMusic(index);
     }
 }
