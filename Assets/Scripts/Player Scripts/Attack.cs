@@ -235,6 +235,10 @@ public class Attack : MonoBehaviour
             playerMove.gravityMult = initGravMult;
             playerMove.turnSpeed = initTurnSpeed;
         }
+        foreach (GameObject effect in attackEffects)
+        {
+            effect.SetActive(false);
+        }
 
         //turns off all hurtboxes just in case
         GetComponentInChildren<CrockAnimListener>().HurtboxOff("PunchCollider");

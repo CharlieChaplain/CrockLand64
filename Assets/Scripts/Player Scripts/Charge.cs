@@ -82,7 +82,7 @@ public class Charge : MonoBehaviour
         }
     }
 
-    public void ChargeMove(Transform cam)
+    public Vector3 ChargeMove(Transform cam)
     {
         float angle = 0f;
 
@@ -111,8 +111,9 @@ public class Charge : MonoBehaviour
             return;
         }*/
 
-        controller.Move(transform.forward * chargeSpeed * Time.deltaTime);
-        playerMove.SetSpeed(chargeSpeed); //done so playerMove knows how fast crock is going incase charge is interrupted
+        Vector3 velocity = transform.forward * chargeSpeed;
+        playerMove.SetSpeed(chargeSpeed);
+        //playerMove.SetSpeed(chargeSpeed); //done so playerMove knows how fast crock is going incase charge is interrupted
 
         //set face direction
         PlayerManager.Instance.faceDir = transform.forward;
@@ -120,6 +121,8 @@ public class Charge : MonoBehaviour
         playerMove.SetAngleToTarget();
 
         playerMove.SlopeCorrection();
+
+        return velocity;
     }
 
     void StartCharge()

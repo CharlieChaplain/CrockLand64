@@ -71,6 +71,8 @@ public class PlayerMove : MonoBehaviour
     private bool sliding = false;
     private bool slidingLastFrame = false;
     public float slideSpeed;
+    public ParticleSystem partSliding;
+    public PlaySound slidingSoundObject;
 
     public Transform waterCheck; //used for determining if the player is in deep enough water to swim
     public float waterCheckRadius;
@@ -96,6 +98,8 @@ public class PlayerMove : MonoBehaviour
         oldECSpeed = edgeCorrectionSpeed;
         animController = anim.runtimeAnimatorController;
 
+        //waterCheck.position = transform.position + (Vector3.up * waterCheckRadius * 2f);
+
         swim = GetComponent<Swim>();
         stone = GetComponent<Form_Stone>();
     }
@@ -106,7 +110,7 @@ public class PlayerMove : MonoBehaviour
 
         CheckGrounded();
         CheckSliding();
-        //CheckSwimming();
+        CheckSwimming();
         
         switch (PlayerManager.Instance.currentState)
         {
@@ -115,7 +119,8 @@ public class PlayerMove : MonoBehaviour
                     Move(maxSpeed, turnSpeed, canMove);
                 break;
             case PlayerManager.PlayerState.charging:
-                GetComponent<Charge>().ChargeMove(cam);
+                if(grounded)
+                    velocity = GetComponent<Charge>().ChargeMove(cam);
                 break;
             case PlayerManager.PlayerState.crouching:
                 Move(maxSpeed, turnSpeed, canMove);
@@ -124,8 +129,7 @@ public class PlayerMove : MonoBehaviour
                 Slide();
                 break;
             case PlayerManager.PlayerState.swimming:
-                velocity = Vector3.zero;
-                swim.RootSwimMove();
+                velocity = swim.RootSwimMove();
                 break;
             case PlayerManager.PlayerState.carrying:
                 Move(maxSpeed, turnSpeed, canMove);
@@ -369,18 +373,6 @@ public class PlayerMove : MonoBehaviour
 
         if(moveDir != Vector3.zero)
             SlopeCorrection();
-
-        //draws movement away from walls if currently over one
-        /*
-        if (currentPolygon.normal != Vector3.zero && currentPolygon.transform.tag == "Wall")
-        {
-            edgeCorrectionSpeed = 1000f;
-            Vector3 move = currentPolygon.normal;
-            move.y = 0;
-            move.Normalize();
-
-            velocity += move * speed * Vector3.Angle(move, moveDir) / 180f;
-        } */
     }
 
     void HurtMove()
@@ -559,16 +551,67 @@ public class PlayerMove : MonoBehaviour
             crouchPressed = false;
     }
 
-    void EnterWater()
+    void CheckSwimming()
     {
-        if(Physics.CheckSphere(waterCheck.position, waterCheckRadius, waterMask, QueryTriggerInteraction.Collide))
+        bool bottomCheck = Physics.CheckSphere(transform.position, waterCheckRadius, waterMask, QueryTriggerInteraction.Collide);
+        bool topCheck = Physics.CheckSphere(waterCheck.position, waterCheckRadius, waterMask, QueryTriggerInteraction.Collide);
+        swim.UpdateChecks(topCheck, bottomCheck);
+
+        //enter check is higher than topcheck, used for entering the water for the first time
+        Vector3 dist = waterCheck.position - transform.position;
+        bool enterCheck = Physics.CheckSphere(waterCheck.position + dist,
+            waterCheckRadius, waterMask, QueryTriggerInteraction.Collide);
+
+        if (enterCheck)
+        {
+            //first time check
+            if(PlayerManager.Instance.currentState != PlayerManager.PlayerState.swimming)
+            {
+                if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.charging)
+                    GetComponent<Charge>().StopCharge();
+                PlayerManager.Instance.currentState = PlayerManager.PlayerState.swimming;
+                SetControllerDimensions(swimmingCollider);
+                swim.EnterWater(transform.rotation.eulerAngles.y, velocity);
+                controller.Move(waterCheck.position - transform.position - (Vector3.up * waterCheckRadius));
+                anim.SetBool("Swimming", true);
+
+                //this block finds and sets the bubblecollider water volume to the current one (water volumes should never overlap so there shouldn't be conflicts)
+                //bubble collider makes bubble particles disappear when leaving the water
+                Collider[] cols = Physics.OverlapSphere(transform.position, waterCheckRadius);
+                foreach (Collider col in cols)
+                {
+                    if (col.gameObject.layer == 4) // 4 = water
+                    {
+                        swim.bubbleCollider.SetWaterVolume(col.gameObject);
+                        break;
+                    }
+                }
+            }//end if checks current state ISN'T swimming
+        }//end if topcheck
+
+        if(!topCheck && !bottomCheck)
+        {
+            if(PlayerManager.Instance.currentState == PlayerManager.PlayerState.swimming)
+            {
+                PlayerManager.Instance.currentState = PlayerManager.PlayerState.normal;
+                SetControllerDimensions(standingCollider);
+            }
+            anim.SetBool("Swimming", false);
+        }//end if topcheck, botcheck, and is swimming
+    }
+
+    void CheckSwimming2()
+    {
+        if(Physics.CheckSphere(waterCheck.position, waterCheckRadius, waterMask, QueryTriggerInteraction.Collide) ||
+            (Physics.CheckSphere(transform.position, waterCheckRadius, waterMask, QueryTriggerInteraction.Collide) &&
+            PlayerManager.Instance.currentState == PlayerManager.PlayerState.swimming))
         {
             //first time collision
             if(PlayerManager.Instance.currentState != PlayerManager.PlayerState.swimming)
             {
                 SetControllerDimensions(swimmingCollider);
                 swim.EnterWater(transform.rotation.eulerAngles.y, velocity);
-                controller.Move(waterCheck.position - transform.position - (Vector3.up * (waterCheckRadius - 0.12f)));
+                controller.Move(waterCheck.position - transform.position);
             }
             if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.charging)
                 GetComponent<Charge>().StopCharge();
@@ -578,7 +621,7 @@ public class PlayerMove : MonoBehaviour
 
             //this block finds and sets the bubblecollider water volume to the current one (water volumes should never overlap so there shouldn't be conflicts)
             //bubble collider makes bubble particles disappear when leaving the water
-            Collider[] cols = Physics.OverlapSphere(waterCheck.position, waterCheckRadius);
+            Collider[] cols = Physics.OverlapSphere(transform.position, waterCheckRadius);
             foreach(Collider col in cols)
             {
                 if(col.gameObject.layer == 4) // 4 = water
@@ -613,6 +656,8 @@ public class PlayerMove : MonoBehaviour
                 {
                     speed = 0;
                     GetComponent<Charge>().StopCharge();
+                    partSliding.Play();
+                    slidingSoundObject.Play(transform);
                 }
                 PlayerManager.Instance.currentState = PlayerManager.PlayerState.sliding;
                 sliding = true;
@@ -631,6 +676,8 @@ public class PlayerMove : MonoBehaviour
                     PlayerManager.Instance.canMove = true;
                     model.up = Vector3.up;
                     model.forward = Vector3.Cross(transform.right, model.up);
+                    partSliding.Stop();
+                    slidingSoundObject.Stop();
                 }
             }
         }

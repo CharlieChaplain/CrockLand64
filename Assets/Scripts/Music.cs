@@ -59,6 +59,8 @@ public class Music : MonoBehaviour
 
     public void ChangeMusic(int index)
     {
+        if (index == sourceIndex)
+            return;
         StartCoroutine(Fading(index));
     }
 

@@ -5,6 +5,7 @@ using UnityEngine;
 public class Swim : MonoBehaviour
 {
     Transform cam; //camera
+    public Transform model; //crock model, the thing that gets rotated
 
     PlayerMove playerMove;
 
@@ -17,9 +18,11 @@ public class Swim : MonoBehaviour
     public bool inWater;
     bool underwater;
 
-    public Transform waterCheck;
-    public float waterCheckRadius;
+    //public Transform waterCheck;
+    //public float waterCheckRadius;
     public LayerMask waterMask;
+    bool topCheck;
+    bool bottomCheck;
 
     CharacterController controller;
     Animator anim;
@@ -40,7 +43,6 @@ public class Swim : MonoBehaviour
     public PlaySound underwaterSwoosh;
     public PlaySound enterWater;
     public PlaySound surface;
-
 
     public ResizeBubbleCollider bubbleCollider;
 
@@ -74,16 +76,24 @@ public class Swim : MonoBehaviour
     {
         CheckUnderwater();
     }
+
+    public void UpdateChecks(bool _topCheck, bool _bottomCheck)
+    {
+        topCheck = _topCheck;
+        bottomCheck = _bottomCheck;
+    }
+
     public void EnterWater(float currentYRotation, Vector3 _velocity)
     {
         //drops enemy if crock is carrying one
         GetComponent<Attack>().DropEnemy();
+        GetComponent<Attack>().StopAttack();
 
         currentWaterState = WaterStates.paddling;
 
-        velocity = (_velocity * 0.5f) + (transform.forward * 2f);
+        velocity = (_velocity * 0.5f) + (transform.forward * 0f);
 
-        transform.rotation = Quaternion.LookRotation(velocity.normalized, Vector3.up);
+        model.rotation = Quaternion.LookRotation(velocity.normalized, Vector3.up);
 
         //large splash if crock is moving downwards quickly
         if (velocity.y < -2f)
@@ -115,12 +125,13 @@ public class Swim : MonoBehaviour
         else
         {
             surface.Play(transform.position);
-            partWake.Play();
+            if(!partWake.isPlaying)
+                partWake.Play();
         }
 
     }
 
-    public void RootSwimMove()
+    public Vector3 RootSwimMove()
     {
         switch (currentWaterState)
         {
@@ -135,13 +146,12 @@ public class Swim : MonoBehaviour
                 break;
         }
         velocity = Vector3.SmoothDamp(velocity, targetVelocity, ref velocityRef, accel);
-
         if (velocity.magnitude < 0.01f)
             velocity = Vector3.zero;
 
         anim.SetFloat("SwimSpeed", velocity.magnitude);
 
-        controller.Move(velocity * Time.deltaTime);
+        return velocity;
     }
 
     void SwimRotate()
@@ -159,7 +169,9 @@ public class Swim : MonoBehaviour
         currentAngleEulers = Vector3.SmoothDamp(currentAngleEulers, targetAngleEulers, ref timeToTurnRef, timeToTurn);
         currentAngleEulers.x = Mathf.Clamp(currentAngleEulers.x, -90f, 90f);
 
-        transform.rotation = Quaternion.Euler(currentAngleEulers);
+        model.rotation = Quaternion.Euler(currentAngleEulers);
+        //matches root transform's y component to model transform so it matches when crock enters/leaves water
+        transform.rotation = Quaternion.Euler(0, model.rotation.eulerAngles.y, 0);
     }
 
     void SwimMove()
@@ -170,7 +182,7 @@ public class Swim : MonoBehaviour
         if (stroke > 0 && strokeTimer <= 0 && !stroked)
         {
             //set regular velocity to stroke speed
-            velocity = transform.forward * strokeSpeed;
+            velocity = model.forward * strokeSpeed;
 
             anim.SetTrigger("Stroke");
             underwaterSwoosh.Play(transform.position);
@@ -184,7 +196,7 @@ public class Swim : MonoBehaviour
         else if (paddle > 0)
         {
             //set targetvelocity to paddle speed
-            targetVelocity = transform.forward * paddleSpeed;
+            targetVelocity = model.forward * paddleSpeed;
             paddled = true;
         }
         else
@@ -199,10 +211,16 @@ public class Swim : MonoBehaviour
         }
 
         //this line makes crock always swim in his forward direction while diving. Gives more control over direction.
-        velocity = transform.forward * velocity.magnitude;
+        velocity = model.forward * velocity.magnitude;
 
         if (strokeTimer > 0)
             strokeTimer -= Time.deltaTime;
+
+        if (!topCheck)
+        {
+            currentWaterState = WaterStates.paddling;
+            Surface();
+        }
     }
     void Paddle(Transform cam)
     {
@@ -242,8 +260,10 @@ public class Swim : MonoBehaviour
             var partWakeEmission = partWake.emission;
             partWakeEmission.rateOverTime = 3f;
 
-            transform.forward = velocity;
+            model.forward = velocity;
         }
+        //matches root transform's y component to model transform so it matches when crock enters/leaves water
+        transform.rotation = Quaternion.Euler(0, model.rotation.eulerAngles.y, 0);
 
         //enter dive state
         if (Input.GetAxis("Punch") > 0 && !paddled)
@@ -255,8 +275,53 @@ public class Swim : MonoBehaviour
 
     void CheckUnderwater()
     {
+        if (bottomCheck)
+        {
+            inWater = true;
+            if (!topCheck)
+            {
+                //checks if crock needs to surface
+                if (underwater && currentWaterState == WaterStates.diving)
+                {
+                    //currentWaterState = WaterStates.paddling;
+                    //Surface();
+                }
+
+                underwater = false;
+                velocity.y = 0;
+                //particles
+                if(!partWake.isPlaying)
+                    partWake.Play();
+                if(partBubbles.isPlaying)
+                    partBubbles.Stop();
+            }else
+            {
+                underwater = true;
+
+                //particles
+                if (partWake.isPlaying)
+                    partWake.Stop();
+                if (!partBubbles.isPlaying)
+                    partBubbles.Play();
+            }//end if NOT topcheck
+        }else
+        {
+            inWater = false;
+            //particles
+            if (partWake.isPlaying)
+                partWake.Stop();
+            if (partBubbles.isPlaying)
+                partBubbles.Stop();
+        }//end if bottomcheck
+
+        //gives inWater bool to footsteps script
+        GetComponent<Footsteps>().isInWater = inWater;
+    }
+    /*
+    void CheckUnderwater2()
+    {
         //initial check for being in water. This sphere is at the player origin
-        if (Physics.CheckSphere(waterCheck.position, waterCheckRadius, waterMask, QueryTriggerInteraction.Collide))
+        if (Physics.CheckSphere(transform.position, waterCheckRadius, waterMask, QueryTriggerInteraction.Collide))
         {
             //--------------------IN WATER------------------
             if (!inWater)
@@ -267,10 +332,8 @@ public class Swim : MonoBehaviour
 
             if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.swimming)
             {
-                Debug.DrawLine(waterCheck.position, waterCheck.position + (Vector3.up * 2f * waterCheckRadius) + (Vector3.up * .1f), Color.red);
                 //secondary check to see if player is at the top of the water. This sphere is above the previous sphere
-                if (!Physics.CheckSphere(waterCheck.position + (Vector3.up * 2f * waterCheckRadius) + (Vector3.up * .1f),
-                            waterCheckRadius, waterMask, QueryTriggerInteraction.Collide))
+                if (!Physics.CheckSphere(waterCheck.position, waterCheckRadius, waterMask, QueryTriggerInteraction.Collide))
                 {
                     if (underwater && currentWaterState == WaterStates.diving)
                     {
@@ -310,7 +373,7 @@ public class Swim : MonoBehaviour
 
         //gives inWater bool to footsteps script
         GetComponent<Footsteps>().isInWater = inWater;
-    }
+    }*/
 
     public bool IsPaddling()
     {
@@ -322,16 +385,13 @@ public class Swim : MonoBehaviour
         anim.SetTrigger("Stroke");
         underwaterSwoosh.Play(transform.position);
 
-        Vector3 direction = Quaternion.Euler(30f, transform.rotation.eulerAngles.y, 0) * Vector3.forward;
+        Vector3 direction = Quaternion.Euler(45f, transform.rotation.eulerAngles.y, 0) * Vector3.forward;
         velocity = strokeSpeed * direction;
         targetVelocity = velocity;
 
-        transform.forward = velocity;
+        model.forward = velocity;
 
-        //currentAngleEulers.y = transform.rotation.eulerAngles.y;
-        //targetAngleEulers.y = transform.rotation.eulerAngles.y;
-
-        currentAngleEulers = targetAngleEulers = transform.rotation.eulerAngles;
+        currentAngleEulers = targetAngleEulers = model.rotation.eulerAngles;
 
         //changes music to going underwater
         SoundManager.Instance.music.ChangeMusic(1);
@@ -340,12 +400,13 @@ public class Swim : MonoBehaviour
 
     void Surface()
     {
-        anim.SetTrigger("Stroke");
+        //controller.Move(waterCheck.position - transform.position);
+
         surface.Play(transform.position);
 
-        transform.rotation = Quaternion.Euler(0, currentAngleEulers.y, 0);
+        model.rotation = Quaternion.Euler(0, currentAngleEulers.y, 0);
 
-        Vector3 direction = transform.forward;
+        Vector3 direction = model.forward;
         direction.y = 0;
         direction.Normalize();
         targetVelocity = velocity = direction * paddleSpeed;

@@ -30,6 +30,34 @@ public class PlaySound : ScriptableObject
         else
             SoundManager.Instance.KillSoundObject(soundObj, soundObj.GetComponent<AudioSource>().clip.length + 0.1f);
     }
+    //Use when the sound object needs to be parented to a gameobject
+    public virtual void Play(Transform parent)
+    {
+        soundObj = new GameObject();
+        soundObj.transform.parent = parent;
+        soundObj.transform.position = parent.position;
+        soundObj.AddComponent<AudioSource>();
+        soundObj.GetComponent<AudioSource>().clip = sound;
+        soundObj.GetComponent<AudioSource>().volume = SoundManager.Instance.soundEffectVolume;
+        soundObj.GetComponent<AudioSource>().loop = loop;
+        soundObj.GetComponent<AudioSource>().maxDistance = 30f;
+        soundObj.GetComponent<AudioSource>().rolloffMode = AudioRolloffMode.Linear;
+        soundObj.GetComponent<AudioSource>().spatialBlend = 1f;
+        soundObj.GetComponent<AudioSource>().Play();
+        if (loop)
+            SoundManager.Instance.loopingSounds.Add(this);
+        else
+            SoundManager.Instance.KillSoundObject(soundObj, soundObj.GetComponent<AudioSource>().clip.length + 0.1f);
+    }
+
+    public virtual void Stop()
+    {
+        //stop doesn't work for non looping sounds
+        if (!loop)
+            return;
+        SoundManager.Instance.loopingSounds.Remove(this);
+        SoundManager.Instance.KillSoundObject(soundObj, 0);
+    }
 
     public virtual void ChangeVol(float vol)
     {
