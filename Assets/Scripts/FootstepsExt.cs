@@ -23,10 +23,10 @@ public class FootstepsExt : Footsteps
 
             //creates ray and then reverses the direction so that it'll see the top of the water from the outside
             Ray splooshRay = new Ray(transform.position, Vector3.up);
-            splooshRay.origin = splooshRay.GetPoint(5f);
+            splooshRay.origin = splooshRay.GetPoint(1f);
             splooshRay.direction *= -1f;
 
-            if (Physics.Raycast(splooshRay, out hit, 5f, waterMask, QueryTriggerInteraction.Collide))
+            if (Physics.Raycast(splooshRay, out hit, 1f, waterMask, QueryTriggerInteraction.Collide))
             {
                 spawnLoc.y = hit.transform.position.y + (hit.transform.localScale.y / 2f);
             }
@@ -43,7 +43,7 @@ public class FootstepsExt : Footsteps
             RaycastHit hit;
 
             //checks for ground directly below character
-            if (Physics.Raycast(transform.position + (Vector3.up * 1.0f), Vector3.down, out hit, 5f, groundMask, QueryTriggerInteraction.Collide))
+            if (Physics.Raycast(transform.position + (Vector3.up * 1.0f), Vector3.down, out hit, 1f, groundMask, QueryTriggerInteraction.Collide))
             {
                 //checks if ground has ground info component (failsafe)
                 GroundInfo info = hit.transform.GetComponent<GroundInfo>();

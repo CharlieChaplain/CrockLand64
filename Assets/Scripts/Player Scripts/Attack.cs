@@ -22,6 +22,8 @@ public class Attack : MonoBehaviour
 
     public LayerMask enemyMask;
 
+    public PlaySound punchSound;
+
     public bool carrying = false;
     public bool throwing = false;
     bool windingUp = false;
@@ -109,6 +111,7 @@ public class Attack : MonoBehaviour
         GetComponent<Idle>().StopIdle();
         anim.SetTrigger("Attack01");
         playerMove.maxSpeed = 2f;
+        punchSound.Play(transform.position);
         PlayerManager.Instance.currentHitSound = PlayerManager.Instance.hitSounds[0];
     }
 
@@ -229,6 +232,9 @@ public class Attack : MonoBehaviour
     public void StopAttack()
     {
         attackDone = true;
+        PlayerManager.Instance.canMove = true;
+        StopCoroutine("AirRollCoroutine");
+        StopCoroutine("GroundPoundCoroutine");
         if (PlayerManager.Instance.currentState != PlayerManager.PlayerState.crouching)
         {
             playerMove.maxSpeed = initMaxSpeed;
@@ -299,6 +305,7 @@ public class Attack : MonoBehaviour
 
     IEnumerator AirRollCoroutine()
     {
+        attackEffects[2].SetActive(true);
         GetComponentInChildren<CrockAnimListener>().HurtboxOn("AirRollCollider");
 
         playerMove.maxSpeed -= 5f;
@@ -313,7 +320,7 @@ public class Attack : MonoBehaviour
         yield return new WaitForSeconds(timer);
 
         GetComponentInChildren<CrockAnimListener>().HurtboxOff("AirRollCollider");
-
+        attackEffects[2].SetActive(false);
         StopAttack();
     }
 
@@ -343,7 +350,6 @@ public class Attack : MonoBehaviour
             //turns on groundpound effect 1 if a certain amount of time has gone by
             if(timeFalling > 0.2f)
                 attackEffects[1].SetActive(true);
-
             yield return null;
         }
         GetComponentInChildren<CrockAnimListener>().HurtboxOff("GroundPoundCollider");

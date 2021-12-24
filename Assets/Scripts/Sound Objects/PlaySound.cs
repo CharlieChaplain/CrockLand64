@@ -9,7 +9,7 @@ public class PlaySound : ScriptableObject
     protected GameObject soundObj;
 
     public float volume;
-
+    public float distance = 30f; //the distance at which you can start hearing the sound
     public bool loop;
 
     /// <param name="position">The position at which the sound is played</param>

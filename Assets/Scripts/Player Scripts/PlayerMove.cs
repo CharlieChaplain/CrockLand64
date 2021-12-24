@@ -559,7 +559,7 @@ public class PlayerMove : MonoBehaviour
 
         //enter check is higher than topcheck, used for entering the water for the first time
         Vector3 dist = waterCheck.position - transform.position;
-        bool enterCheck = Physics.CheckSphere(waterCheck.position + dist,
+        bool enterCheck = Physics.CheckSphere(waterCheck.position + dist + (Vector3.up * 0.3f),
             waterCheckRadius, waterMask, QueryTriggerInteraction.Collide);
 
         if (enterCheck)
@@ -567,6 +567,7 @@ public class PlayerMove : MonoBehaviour
             //first time check
             if(PlayerManager.Instance.currentState != PlayerManager.PlayerState.swimming)
             {
+                speed = 0;
                 if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.charging)
                     GetComponent<Charge>().StopCharge();
                 PlayerManager.Instance.currentState = PlayerManager.PlayerState.swimming;
@@ -716,17 +717,25 @@ public class PlayerMove : MonoBehaviour
             (PlayerManager.Instance.currentState == PlayerManager.PlayerState.swimming && swim.IsPaddling())) &&
             !jumping)
         {
+            //resets all swimming variables if jumping from swimming
             if(PlayerManager.Instance.currentState == PlayerManager.PlayerState.swimming)
             {
                 PlayerManager.Instance.currentState = PlayerManager.PlayerState.normal;
                 SetControllerDimensions(standingCollider);
             }
 
+            //resets all ladder variables if jumping from ladder
             if(PlayerManager.Instance.currentState == PlayerManager.PlayerState.ladder)
             {
                 anim.SetBool("ClimbingLadder", false);
                 GetComponent<LadderClimb>().SetRegrabTimer(.35f);
                 PlayerManager.Instance.currentState = PlayerManager.PlayerState.normal;
+            }
+
+            //plays the shockwave particle if crock is jumping while charging
+            if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.charging)
+            {
+                GetComponent<Charge>().chargeShockwave.Play();
             }
 
             if (crouching && speed != 0)

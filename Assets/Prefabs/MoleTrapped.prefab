@@ -62,7 +62,10 @@ MonoBehaviour:
   anim: {fileID: 3449570115030011483}
   hurtPart: {fileID: 8421497964590506690, guid: 9af9d8a5822f5bd44a03dbf8c634cac7,
     type: 3}
+  diePart: {fileID: 0}
+  ToHideOnDeath: {fileID: 0}
   modelObj: {fileID: 0}
+  dieSound: {fileID: 0}
   model: {fileID: 7171533992915631347}
   unboundMesh: {fileID: 4754305307122039218, guid: 653b9a9b23b4e4a4ba352b00c5e9fbf3,
     type: 3}
@@ -71,6 +74,11 @@ MonoBehaviour:
   moleHillAnim: {fileID: 3449570115120759212}
   moleID: 
   moleUI: {fileID: 0}
+  struggleSounds:
+  - {fileID: 11400000, guid: 9ffc4a9245966484a97b6b0e64932159, type: 2}
+  - {fileID: 11400000, guid: 41f3adefde2040e4883dcbd156a340f1, type: 2}
+  - {fileID: 11400000, guid: 2d7dbbb3e4be771499e9c7115f42ee76, type: 2}
+  freeSound: {fileID: 11400000, guid: ca8414e0a0a440f43bbe1486ab7492d9, type: 2}
 --- !u!65 &3449570115048321689
 BoxCollider:
   m_ObjectHideFlags: 0

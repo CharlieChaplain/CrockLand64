@@ -19,6 +19,10 @@ public class MoleTrapped_Logic : Enemy
     public string moleID; //a 2 digit string representing the level the mole is in and which mole it is.
     public MoleUI moleUI; //the corresponding UI element of the mole
 
+    public PlaySound[] struggleSounds;
+    public PlaySound freeSound;
+    float struggleTimer;
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -34,16 +38,21 @@ public class MoleTrapped_Logic : Enemy
         {
             moleUI.moleID = moleID;
             if (TreasureMaster.Instance.QueryMole(int.Parse(moleID.Substring(0, 1)), int.Parse(moleID.Substring(1, 1))))
-                Destroy(this.gameObject);
+                Destroy(gameObject);
         }
-            
 
-
+        struggleTimer = Random.Range(2f, 5f);
     }
 
     // Update is called once per frame
     protected override void Update()
     {
+        struggleTimer -= Time.deltaTime;
+        if(struggleTimer <= 0 && !freed)
+        {
+            struggleTimer = Random.Range(2f, 5f);
+            struggleSounds[Random.Range(0, 3)].Play(transform.position);
+        }
     }
 
     void Freed()
@@ -56,8 +65,15 @@ public class MoleTrapped_Logic : Enemy
         anim.SetTrigger("BreakFree");
         moleHillAnim.SetTrigger("BreakFree");
 
+        //swaps model out and replaces materials. (Otherwise a bug would occur where the top two materials would stack on top of eachother
+        Material[] mats = new Material[2];
+        mats[0] = model.materials[0];
+        mats[1] = model.materials[1];
         model.sharedMesh = unboundMesh;
+        model.materials = mats;
+
         ropePart.Play();
+        freeSound.Play(transform.position);
 
         StartCoroutine("Leave");
     }

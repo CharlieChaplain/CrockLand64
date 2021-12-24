@@ -28,6 +28,10 @@ public class Charge : MonoBehaviour
     public float chargeCheckRadius;
     public LayerMask chargeCheckMask;
 
+    public PlaySound chargeSound;
+    public GameObject chargeEffect;
+    public ParticleSystem chargeShockwave;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -64,6 +68,8 @@ public class Charge : MonoBehaviour
         {
             pressed = false;
         }
+
+        chargeEffect.SetActive(playerMove.GetGrounded() && charging);
     }
 
     private void LateUpdate()
@@ -140,6 +146,9 @@ public class Charge : MonoBehaviour
 
         oldMaxSpeed = playerMove.maxSpeed;
         playerMove.maxSpeed = chargeSpeed;
+
+        chargeSound.Play(transform);
+        chargeShockwave.Play();
     }
     public void StopCharge()
     {

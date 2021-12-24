@@ -54,7 +54,8 @@ public class Swim : MonoBehaviour
 
     public GameObject sploosh;
 
-    int prevMusicIndex; //used for changing the music when diving and resurfacing
+    int prevMusicIndex = -1; //used for changing the music when diving and resurfacing
+    const int UWMUSICINDEX = 1; //the index of underwater music.
 
     private enum WaterStates
     {
@@ -241,7 +242,7 @@ public class Swim : MonoBehaviour
             targetVelocity = Vector3.zero;
         }
 
-        if (underwater)
+        if (underwater && PlayerManager.Instance.canMove)
             velocity.y += .2f;
 
         if (Input.GetAxis("Punch") == 0)
@@ -254,6 +255,9 @@ public class Swim : MonoBehaviour
             //emits less particles if staying still
             var partWakeEmission = partWake.emission;
             partWakeEmission.rateOverTime = 1f;
+
+            if (!underwater)
+                model.localRotation = Quaternion.identity;
         }
         else
         {
@@ -394,8 +398,12 @@ public class Swim : MonoBehaviour
         currentAngleEulers = targetAngleEulers = model.rotation.eulerAngles;
 
         //changes music to going underwater
-        SoundManager.Instance.music.ChangeMusic(1);
-        prevMusicIndex = SoundManager.Instance.music.GetSourceIndex();
+        int currentIndex = SoundManager.Instance.music.GetSourceIndex();
+        if(currentIndex != UWMUSICINDEX)
+        {
+            prevMusicIndex = currentIndex;
+            SoundManager.Instance.music.ChangeMusic(1);
+        }
     }
 
     void Surface()

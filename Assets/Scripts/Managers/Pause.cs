@@ -64,6 +64,7 @@ public class Pause : MonoBehaviour
     {
         paused = true;
         PlayerManager.Instance.paused = true;
+        PlayerManager.Instance.canMove = false;
 
         currentMenu = allMenus[0];
         currentMenu.cursor.ResetMenu();
@@ -78,6 +79,7 @@ public class Pause : MonoBehaviour
     {
         paused = false;
         PlayerManager.Instance.paused = false;
+        PlayerManager.Instance.canMove = true;
 
         Time.timeScale = oldTimeScale;
 
