@@ -27,6 +27,8 @@ public class IrisWipe : MonoBehaviour
     public TimelineAsset TL_wipeIn;
     public TimelineAsset TL_wipeOut;
 
+    public PlaySound SO_wipeIn;
+    public PlaySound SO_wipeOut;
 
     public void OnSceneLoad()
     {
@@ -37,11 +39,15 @@ public class IrisWipe : MonoBehaviour
     {
         irisWipe.GetComponent<PlayableDirector>().playableAsset = TL_wipeIn;
         irisWipe.GetComponent<PlayableDirector>().Play();
+
+        SO_wipeIn.Play(CameraManager.Instance.sceneCam.transform);
     }
 
     public void WipeOut()
     {
         irisWipe.GetComponent<PlayableDirector>().playableAsset = TL_wipeOut;
         irisWipe.GetComponent<PlayableDirector>().Play();
+
+        SO_wipeOut.Play(CameraManager.Instance.sceneCam.transform);
     }
 }

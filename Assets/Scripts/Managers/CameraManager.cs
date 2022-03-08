@@ -27,7 +27,7 @@ public class CameraManager : MonoBehaviour
     public void OnSceneLoad()
     {
         sceneCam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
-        SetCamera(GameObject.Find("CrockCam"), 0);
+        currentCamera = GameObject.Find("CrockCam").GetComponent<CinemachineVirtualCameraBase>();
     }
 
     public void SetCamera(GameObject newCam, float transitionTime)
@@ -35,9 +35,15 @@ public class CameraManager : MonoBehaviour
         if(currentCamera != null)
             currentCamera.Priority = 5;
 
+        if (currentCamera.GetComponent<CinemachineCollider>())
+            currentCamera.GetComponent<CinemachineCollider>().enabled = false;
+
         currentCamera = newCam.GetComponent<CinemachineVirtualCameraBase>();
         currentCamera.Priority = 10;
 
         sceneCam.GetComponent<CinemachineBrain>().m_DefaultBlend.m_Time = transitionTime;
+
+        if (currentCamera.GetComponent<CinemachineCollider>())
+            currentCamera.GetComponent<CinemachineCollider>().enabled = true;
     }
 }

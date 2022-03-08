@@ -23,6 +23,9 @@ public class Attack : MonoBehaviour
     public LayerMask enemyMask;
 
     public PlaySound punchSound;
+    public PlaySound groundPoundSound;
+    public PlaySound groundPoundEndSound;
+    public PlaySound airRollSound;
 
     public bool carrying = false;
     public bool throwing = false;
@@ -305,6 +308,8 @@ public class Attack : MonoBehaviour
 
     IEnumerator AirRollCoroutine()
     {
+        airRollSound.Play(transform.position);
+
         attackEffects[2].SetActive(true);
         GetComponentInChildren<CrockAnimListener>().HurtboxOn("AirRollCollider");
 
@@ -334,6 +339,8 @@ public class Attack : MonoBehaviour
         playerMove.SetVelocity(Vector3.up * 2f);
         playerMove.gravityMult = 0;
 
+        groundPoundSound.Play(transform.position);
+
         float timer = .317f; //this is how long the groundpound animation is
         yield return new WaitForSeconds(timer);
 
@@ -359,6 +366,10 @@ public class Attack : MonoBehaviour
         bounceVelocity.y = 10f;
         playerMove.SetVelocity(bounceVelocity);
         attackEffects[1].SetActive(false);
+
+        groundPoundSound.Stop();
+        groundPoundEndSound.Play(transform.position);
+        GetComponent<Charge>().chargeShockwave.Play();
 
         yield return new WaitForSeconds(0.2f);
 

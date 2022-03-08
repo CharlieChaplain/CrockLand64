@@ -11,6 +11,7 @@ public class Menu : MonoBehaviour
     public int numOptions;
 
     protected bool pressed; //prevents holding the button to scroll every frame
+    protected bool active;
 
     public List<Image> optionImages;
 
@@ -19,13 +20,17 @@ public class Menu : MonoBehaviour
     {
         cursor.ResetMenu();
         RecolorOptions();
+        pause = GameObject.Find("PauseDirector").GetComponent<Pause>();
+        active = false;
     }
 
     // Update is called once per frame
     protected virtual void Update()
     {
-        if (!PlayerManager.Instance.paused)
+        if (!PlayerManager.Instance.paused || !active)
+        {
             return;
+        }
         if (!pressed)
         {
             if (Input.GetAxisRaw("Vertical") > 0)
@@ -66,8 +71,20 @@ public class Menu : MonoBehaviour
     {
         cursor.ResetMenu();
         RecolorOptions();
+        active = true;
     }
     public virtual void Leave()
+    {
+        active = false;
+    }
+
+    public virtual void SetActive(bool _active)
+    {
+        active = _active;
+    }
+
+    //used when a yes or no submenu is added on top of this menu
+    public virtual void AcceptVerification()
     {
 
     }

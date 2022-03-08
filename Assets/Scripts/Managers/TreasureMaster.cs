@@ -26,8 +26,7 @@ public class TreasureMaster : MonoBehaviour
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public void OnSceneLoad()
     {
         treasureList = GameObject.Find("TreasureList").GetComponent<TreasureList>();
 

@@ -25,6 +25,7 @@ public class PlayerMove : MonoBehaviour
     public float jumpHeight;
     private float oldJumpHeight;
     private float currentFormJumpHeight;
+    private bool jumpFootLeft = true; //swaps each jump, used to determine the foot crock holds up
 
     public float maxSpeed = 10f;
     private float functionalMaxSpeed;
@@ -37,7 +38,7 @@ public class PlayerMove : MonoBehaviour
     public float gravityMult = 0.25f;
     public float upGravMult = 0.4f;
     public float downGravMult = 0.2f;
-    private float terminalVelocity = -25.0f;
+    private float terminalVelocity = -40.0f;
     private float oldDownGravMult;
     private float oldUpGravMult;
 
@@ -55,6 +56,7 @@ public class PlayerMove : MonoBehaviour
     private float angleToLean;
 
     public float edgeCorrectionSpeed = 0.5f; //speed that the character falls off the edge
+    private float edgeCorrectionAddition = 0; //adds more edge correction the longer it's happening
     private float oldECSpeed;
     public float noSlipDistance = 0.1f; //distance character is from edge of platform before they slip off
     public float velDampenMult;
@@ -71,8 +73,10 @@ public class PlayerMove : MonoBehaviour
     private bool sliding = false;
     private bool slidingLastFrame = false;
     public float slideSpeed;
+    public float slideMaxSpeed;
     public ParticleSystem partSliding;
     public PlaySound slidingSoundObject;
+    float oldSlopeLimit; //used to increase crock's slope limit when sliding
 
     public Transform waterCheck; //used for determining if the player is in deep enough water to swim
     public float waterCheckRadius;
@@ -96,6 +100,7 @@ public class PlayerMove : MonoBehaviour
         oldUpGravMult = upGravMult;
         oldMaxSpeed = maxSpeed;
         oldECSpeed = edgeCorrectionSpeed;
+        oldSlopeLimit = controller.slopeLimit;
         animController = anim.runtimeAnimatorController;
 
         //waterCheck.position = transform.position + (Vector3.up * waterCheckRadius * 2f);
@@ -160,8 +165,8 @@ public class PlayerMove : MonoBehaviour
 
             if (canMove)
             {
-
-                CheckCrouch();
+                if(PlayerManager.Instance.currentState != PlayerManager.PlayerState.sliding)
+                    CheckCrouch();
 
                 anim.SetFloat("Speed", speed);
             }
@@ -244,7 +249,8 @@ public class PlayerMove : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (PlayerManager.Instance.canMove && other.gameObject.CompareTag("NPC"))
+        if (other.gameObject.CompareTag("NPC") && PlayerManager.Instance.canMove &&
+            other.gameObject.GetComponent<NPC>().canEngage && PlayerManager.Instance.currentState == PlayerManager.PlayerState.normal)
         {
             buttonAlert.SetActive(true);
             buttonAlert.GetComponent<Animator>().SetBool("Active", true);
@@ -255,6 +261,7 @@ public class PlayerMove : MonoBehaviour
 
                 StartCoroutine(ButtonAlertDisappear());
             }
+            
         }
         else
         {
@@ -271,7 +278,6 @@ public class PlayerMove : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        //Gizmos.DrawWireSphere(hitInfoPoint, 0.1f);
     }
 
     private void LateUpdate()
@@ -286,7 +292,8 @@ public class PlayerMove : MonoBehaviour
             FixEdgeCollision();
 
         //last thing in the frame is to move the character
-        controller.Move(velocity * Time.deltaTime);
+        if(controller.enabled)
+            controller.Move(velocity * Time.deltaTime);
     }
 
     void FixEdgeCollision()
@@ -295,19 +302,36 @@ public class PlayerMove : MonoBehaviour
 
         //does not apply if crock is currently grounded or swimming or if he is moving upwards (jumping up usually)
         if (grounded || PlayerManager.Instance.currentState == PlayerManager.PlayerState.swimming || velocity.y >= 0)
+        {
+            edgeCorrectionAddition = 0;
             return;
+        }
 
         Vector3 sphereCastOrigin = transform.position + controller.center;
         float sphereCastRadius = controller.radius + controller.skinWidth;
-        float sphereCastLength = controller.center.magnitude + groundCheckRadius;
+        float sphereCastLength = controller.center.magnitude + groundCheckRadius + 0.1f;
         Ray sphereCastRay = new Ray(sphereCastOrigin, Vector3.down);
+
+        
+
+        Vector3 position = sphereCastOrigin + (Vector3.down * sphereCastLength);
+        Debug.DrawLine(sphereCastOrigin, position, Color.blue);
+        for (int i = 0; i < 30; i++) {
+            Debug.DrawLine(position,
+                position + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 0f), Random.Range(-1f, 1f)).normalized * sphereCastRadius,
+                Color.red);
+        }
+
         RaycastHit hit;
 
         //checks if crock is touching ground but isn't grounded. RaycastHit gives more info than a simple sphere check
         if (Physics.SphereCast(sphereCastRay, sphereCastRadius, out hit, sphereCastLength, groundMask))
         {
             Vector3 pushDir = hit.normal + (ROOT2 * Vector3.down);
-            controller.Move(pushDir * edgeCorrectionSpeed * Time.deltaTime);
+            if(controller.enabled)
+                controller.Move(pushDir * (edgeCorrectionSpeed + edgeCorrectionAddition) * Time.deltaTime);
+
+            edgeCorrectionAddition += 0.1f;
         }
     }
 
@@ -411,11 +435,6 @@ public class PlayerMove : MonoBehaviour
 
     void ApplyGravity()
     {
-        if (grounded && ungroundTimerUp && GetComponent<Attack>().attackDone
-                                        && PlayerManager.Instance.currentState != PlayerManager.PlayerState.sliding
-                                        && PlayerManager.Instance.currentState != PlayerManager.PlayerState.hurt)
-            velocity.y = 0;
-
         float finalGravMult = gravityMult;
         if (velocity.y > 0)
             finalGravMult *= upGravMult;
@@ -423,6 +442,11 @@ public class PlayerMove : MonoBehaviour
             finalGravMult *= downGravMult;
 
         velocity += Physics.gravity * Time.deltaTime * finalGravMult;
+
+        if (grounded && ungroundTimerUp && GetComponent<Attack>().attackDone
+                                        && PlayerManager.Instance.currentState != PlayerManager.PlayerState.sliding
+                                        && PlayerManager.Instance.currentState != PlayerManager.PlayerState.hurt)
+            velocity.y = -1f;
 
         //prevents player from falling faster than terminal velocity
         if (velocity.y < terminalVelocity)
@@ -437,9 +461,15 @@ public class PlayerMove : MonoBehaviour
         //----------------old method of doing it with a spherecheck. This method works really well! But I wanted a raycasthit object------------------
         //grounded = ungroundTimerUp && Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundMask);
         RaycastHit hit;
+        bool oldGrounded = grounded;
         grounded = ungroundTimerUp &&
                    Physics.SphereCast(transform.position + controller.center, groundCheckRadius, Vector3.down, out hit,
                                       (controller.height / 2f) + .05f, groundMask);
+
+        if(!oldGrounded && grounded)
+        {
+            StartCoroutine("LandingBounce");
+        }
 
         /* Raycast to find grounded. Replaced with a spherecast to be a little more lenient
         Physics.Raycast(transform.position + controller.center, Vector3.down, out currentPolygon,
@@ -657,15 +687,11 @@ public class PlayerMove : MonoBehaviour
                 {
                     speed = 0;
                     GetComponent<Charge>().StopCharge();
-                    partSliding.Play();
-                    slidingSoundObject.Play(transform);
+                    
                 }
                 PlayerManager.Instance.currentState = PlayerManager.PlayerState.sliding;
                 sliding = true;
-                PlayerManager.Instance.canMove = false;
-
-                model.up = currentPolygon.normal;
-                model.forward = Vector3.Cross(transform.right, model.up);
+                controller.slopeLimit = 70f;
             }
             else
             {
@@ -674,12 +700,16 @@ public class PlayerMove : MonoBehaviour
                 {
                     PlayerManager.Instance.currentState = PlayerManager.PlayerState.normal;
                     sliding = false;
-                    PlayerManager.Instance.canMove = true;
                     model.up = Vector3.up;
                     model.forward = Vector3.Cross(transform.right, model.up);
-                    partSliding.Stop();
-                    slidingSoundObject.Stop();
                 }
+
+                controller.slopeLimit = oldSlopeLimit;
+
+                if (partSliding.isEmitting)
+                    partSliding.Stop();
+                if (slidingSoundObject.IsPlaying())
+                    slidingSoundObject.Stop();
             }
         }
 
@@ -689,25 +719,62 @@ public class PlayerMove : MonoBehaviour
 
     void Slide()
     {
+        if (grounded)
+        {
+            if(!partSliding.isEmitting)
+                partSliding.Play();
+            if(!slidingSoundObject.IsPlaying())
+                slidingSoundObject.Play(transform);
+
+            //changes crock's direction and up vector so he is flush with the ground when sliding
+            model.transform.rotation = Quaternion.LookRotation(controller.velocity, currentPolygon.normal);
+        }
+        else if (!grounded)
+        {
+            if (partSliding.isEmitting)
+                partSliding.Stop();
+            if (slidingSoundObject.IsPlaying())
+                slidingSoundObject.Stop();
+
+            model.transform.localRotation = Quaternion.identity;
+        }
+
         float horz = Input.GetAxis("Horizontal");
         float vert = Input.GetAxis("Vertical");
         Vector3 direction = Quaternion.Euler(0, cam.eulerAngles.y, 0) * new Vector3(horz, 0f, vert);
 
-        Vector3 move = currentPolygon.normal;
-        move.y = 0;
-        move.Normalize();
+        Vector3 move = Vector3.zero;
+        float directionMult = 1f; //will multiply direction later so it's easier to turn
+        if (grounded)
+        {
+            move = currentPolygon.normal;
+            move.y = 0;
+            //will determine how skewed from cardinal the normal is by taking magnitude
+            //the higher the result, the more tilted the plane is. This is then clamped just in case
+            float tilt = Mathf.Clamp(move.magnitude, 0, 1f);
+            move = move.normalized * tilt;
 
-        move += (direction * 1f);
+            //attempts to make it so that you can't slide back up a slope
+            float dotprod = Vector3.Dot(direction, move) + 1f;
+            direction *= dotprod;
+        }
 
-        move *= slideSpeed;
+        move += (direction * directionMult);
+
+        move *= slideSpeed * 3f;
         velocity += move;
+
+        velocity = Vector3.ClampMagnitude(velocity, slideMaxSpeed);
+
 
         speed = Mathf.Clamp(velocity.magnitude, 0, functionalMaxSpeed);
 
         targetAngle = Mathf.Atan2(move.x, move.z) * Mathf.Rad2Deg;
-        angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothing, 1f);
-        transform.rotation = Quaternion.Euler(0f, angle, 0f);
-
+        angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothing, 0.5f);
+        Quaternion newRot = Quaternion.Euler(0f, angle, 0f);
+        transform.rotation = newRot;
+        
+        SlopeCorrection();
     }
 
     void Jump()
@@ -732,6 +799,12 @@ public class PlayerMove : MonoBehaviour
                 PlayerManager.Instance.currentState = PlayerManager.PlayerState.normal;
             }
 
+            //sets state to normal if player is sliding
+            if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.sliding)
+            {
+                //PlayerManager.Instance.currentState = PlayerManager.PlayerState.normal;
+            }
+
             //plays the shockwave particle if crock is jumping while charging
             if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.charging)
             {
@@ -749,6 +822,8 @@ public class PlayerMove : MonoBehaviour
             GetComponent<Idle>().StopIdleFull();
 
             anim.SetTrigger("Jump");
+            anim.SetBool("JumpFootLeft", jumpFootLeft);
+            jumpFootLeft = !jumpFootLeft;
             velocity.y = Mathf.Sqrt(jumpHeight * -2.0f * Physics.gravity.y * gravityMult);
             jumping = true;
             jumpSound.Play(transform.position);
@@ -851,5 +926,23 @@ public class PlayerMove : MonoBehaviour
         buttonAlert.GetComponent<Animator>().SetBool("Active", false);
         yield return new WaitForSeconds(0.1f);
         buttonAlert.SetActive(false);
+    }
+    
+    IEnumerator LandingBounce()
+    {
+        float timer = 0;
+        float timeUp = 0.15f;
+
+        float amount = Mathf.Clamp(-velocity.y, 0, 12) / 12f; //12 was an arbitrary vertical velocity that's roughly what crock hits when jumping on a flat plane
+        while(timer < timeUp)
+        {
+            float xz = (Mathf.Sin((timer / timeUp) * Mathf.PI) / 4f) * amount;
+            float y = (Mathf.Sin((timer / timeUp) * Mathf.PI) / 4f) * amount;
+            model.transform.localScale = new Vector3(1f + xz, 1f - y, 1f + xz);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        model.transform.localScale = new Vector3(1f,1f,1f);
     }
 }

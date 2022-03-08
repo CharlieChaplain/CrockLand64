@@ -50,6 +50,7 @@ public class OptionsMenu : Menu
     }
     public override void Leave()
     {
+        base.Leave();
         optionsMenuAnim.SetBool("Show", false);
     }
 }

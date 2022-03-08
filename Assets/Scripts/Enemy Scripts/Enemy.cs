@@ -107,7 +107,7 @@ public class Enemy : MonoBehaviour
         {
             hurtSound.Play(transform.position + GetComponent<CharacterController>().center);
         }
-        StartCoroutine("pauseTime");
+        //StartCoroutine("pauseTime");
     }
 
     protected virtual void CheckGrounded()

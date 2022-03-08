@@ -10,6 +10,8 @@ public class MenuCursor : MonoBehaviour
     protected RectTransform rectTransform;
     protected Vector2 PosAtZeroY; //where the pointer is at when its y value is not altered.
 
+    public PlaySound menuPipSound;
+
     private void Start()
     {
         rectTransform = GetComponent<RectTransform>();
@@ -37,6 +39,7 @@ public class MenuCursor : MonoBehaviour
             float yPos = (((numOptions - 1) / 2f) * 40f) + 5f - (40f * currentOption);
             StopCoroutine("MoveCursor");
             StartCoroutine("MoveCursor", new Vector3(PosAtZeroY.x, yPos, 0));
+            menuPipSound.Play(CameraManager.Instance.sceneCam.transform.position);
         }
     }
 
@@ -52,6 +55,7 @@ public class MenuCursor : MonoBehaviour
             float yPos = (((numOptions - 1) / 2f) * 40f) + 5f - (40f * currentOption);
             StopCoroutine("MoveCursor");
             StartCoroutine("MoveCursor", new Vector3(PosAtZeroY.x, yPos, 0));
+            menuPipSound.Play(CameraManager.Instance.sceneCam.transform.position);
         }
     }
 

@@ -16,15 +16,21 @@ public class Music : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //failsafe if music lists are empty
+        if (intros.Length == 0 && sources.Length == 0)
+            return;
+
         sourceIndex = 0;
         //starts all musics so they will be synced
         for (int i = 0; i < sources.Length; i++)
         {
-            if (intros != null)
+            if (intros.Length > 0)
             {
                 intros[i].Play();
                 float introLength = intros[sourceIndex].clip.length;
-                sources[i].PlayDelayed(introLength);
+                PDAInfo info = new PDAInfo(sources[i], introLength);
+                //sources[i].PlayDelayed(introLength);
+                StartCoroutine("PlayDelayedAlt", info);
             }
             else
             {
@@ -41,10 +47,10 @@ public class Music : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (isFading)
+        if (isFading || (intros.Length == 0 && sources.Length == 0))
             return;
 
-        if (intros != null)
+        if (intros.Length > 0)
         {
             intros[sourceIndex].volume = SoundManager.Instance.musicVolume;
         }
@@ -62,6 +68,26 @@ public class Music : MonoBehaviour
         if (index == sourceIndex)
             return;
         StartCoroutine(Fading(index));
+    }
+
+    public void Pause()
+    {
+        for (int i = 0; i < sources.Length; i++)
+        {
+            if (intros != null)
+                intros[i].Pause();
+            sources[i].Pause();
+        }
+    }
+
+    public void UnPause()
+    {
+        for (int i = 0; i < sources.Length; i++)
+        {
+            if (intros != null)
+                intros[i].UnPause();
+            sources[i].UnPause();
+        }
     }
 
     IEnumerator Fading(int newIndex)
@@ -91,5 +117,28 @@ public class Music : MonoBehaviour
 
         sourceIndex = newIndex;
         isFading = false;
+    }
+    /// <summary>
+    /// used instead of base PlayDelayed because this accounts for pausing the game
+    /// </summary>
+    /// <param name="info">Custom class that contains the audio source to play, and the time to delay</param>
+    IEnumerator PlayDelayedAlt(PDAInfo info)
+    {
+        yield return new WaitForSeconds(info.time);
+        info.source.Play();
+    }
+}
+/// <summary>
+/// Used to pass information into the PlayDelayedAlt coroutine
+/// </summary>
+class PDAInfo
+{
+    public AudioSource source;
+    public float time;
+
+    public PDAInfo(AudioSource _s, float _t)
+    {
+        source = _s;
+        time = _t;
     }
 }

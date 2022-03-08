@@ -38,6 +38,7 @@ public class TreasureCursor : MenuCursor
             width = 100f;
             StopCoroutine("MoveCursor");
             StartCoroutine("MoveCursor", new Vector3(0, -102f, -.2f));
+            menuPipSound.Play(CameraManager.Instance.sceneCam.transform.position);
         }
         else if (currentSlot.y == 5)
         {
@@ -48,6 +49,7 @@ public class TreasureCursor : MenuCursor
             width = 24f;
             StopCoroutine("MoveCursor");
             StartCoroutine("MoveCursor", newPos());
+            menuPipSound.Play(CameraManager.Instance.sceneCam.transform.position);
         }
     }
 
@@ -63,6 +65,7 @@ public class TreasureCursor : MenuCursor
             width = 24f;
             StopCoroutine("MoveCursor");
             StartCoroutine("MoveCursor", newPos());
+            menuPipSound.Play(CameraManager.Instance.sceneCam.transform.position);
         }
     }
 
@@ -77,6 +80,7 @@ public class TreasureCursor : MenuCursor
             width = 24f;
             StopCoroutine("MoveCursor");
             StartCoroutine("MoveCursor", newPos());
+            menuPipSound.Play(CameraManager.Instance.sceneCam.transform.position);
         }
     }
     public void MoveRight()
@@ -90,6 +94,7 @@ public class TreasureCursor : MenuCursor
             width = 24f;
             StopCoroutine("MoveCursor");
             StartCoroutine("MoveCursor", newPos());
+            menuPipSound.Play(CameraManager.Instance.sceneCam.transform.position);
         }
     }
 

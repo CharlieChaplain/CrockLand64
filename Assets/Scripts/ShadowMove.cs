@@ -21,7 +21,7 @@ public class ShadowMove : MonoBehaviour {
 		int layerMask = 1 << 8;
 		Physics.Raycast (target.position + Vector3.up * 0.5f, Vector3.down, out hit, Mathf.Infinity, layerMask, QueryTriggerInteraction.Collide);
 
-        posXZ.y = hit.point.y + 0.001f;
+        posXZ.y = hit.point.y + 0.01f;
         transform.position = posXZ;
         transform.up = hit.normal;
 

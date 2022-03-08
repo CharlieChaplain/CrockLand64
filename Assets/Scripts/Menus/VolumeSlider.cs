@@ -11,6 +11,8 @@ public class VolumeSlider : MonoBehaviour
 
     const float INCREMENT = .0625f; //1/16, because there are 16 pips in the slider
 
+    public PlaySound menuPipSound;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,11 +25,16 @@ public class VolumeSlider : MonoBehaviour
         {
             sliderPips[sliderPips.Length - 1].color = Color.white;
             currentVolume = 16;
+
+            menuPipSound.Play(CameraManager.Instance.sceneCam.transform.position);
+
             return 1f;
         }
 
         sliderPips[currentVolume].color = Color.white;
         currentVolume++;
+
+        menuPipSound.Play(CameraManager.Instance.sceneCam.transform.position);
 
         return currentVolume * INCREMENT;
     }
@@ -38,6 +45,8 @@ public class VolumeSlider : MonoBehaviour
 
         sliderPips[currentVolume - 1].color = Color.gray;
         currentVolume--;
+
+        menuPipSound.Play(CameraManager.Instance.sceneCam.transform.position);
 
         return currentVolume * INCREMENT;
     }

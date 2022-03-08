@@ -1,32 +1,40 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 
 
 public class VertexColorChanger : MonoBehaviour
 {
-    public Color color;
+    //public Color color;
 
     private TMP_Text m_TextComponent;
+
+    private List<Color> colors;
 
     void Awake()
     {
         m_TextComponent = GetComponent<TMP_Text>();
     }
 
-    public void StartColorChanger(float textSpeed)
+    public void StartColorChanger(float textSpeed, List<Color> sentenceColors)
     {
         textSpeed = 1f / textSpeed; //inverses it for better readablity outside of this class
+        colors = sentenceColors;
+        StopAllCoroutines();
         StartCoroutine(AnimateVertexColors(textSpeed));
     }
 
     /// <summary>
     /// Method to reveal each character of a TMPro one by one
     /// </summary>
-    /// <param name="textSpeed">default 1 (twice a frame length), modulates how fast the text appears.</param>
+    /// <param name="textSpeed">default 1 (once a frame length), modulates how fast the text appears.</param>
     /// <returns></returns>
     IEnumerator AnimateVertexColors(float textSpeed)
     {
+        //will count up if player is holding jump button towards displaying the entire sentence
+        float skipTimer = 0;
+
         // Force the text object to update right away so we can have geometry to modify right from the start.
         m_TextComponent.ForceMeshUpdate();
 
@@ -58,6 +66,9 @@ public class VertexColorChanger : MonoBehaviour
             // Only change the vertex color if the text element is visible.
             if (textInfo.characterInfo[currentCharacter].isVisible)
             {
+                //sets new color to be the color at current index in the previously constructed sentenceColors list
+                Color color = colors[currentCharacter];
+
                 newVertexColors[vertexIndex + 0] = color;
                 newVertexColors[vertexIndex + 1] = color;
                 newVertexColors[vertexIndex + 2] = color;
@@ -72,14 +83,40 @@ public class VertexColorChanger : MonoBehaviour
 
             currentCharacter++;
 
-            //will scroll text faster if jump is held down
-            if (Input.GetButtonDown("Jump"))
-                yield return new WaitForSeconds(0.04f);
+            //will scroll text immediately if jump is held down
+            if (Input.GetButton("Jump"))
+            {
+                skipTimer += Time.deltaTime;
+                if(skipTimer > 0.8f)
+                {
+                    for(int i = 0; i < characterCount; i++)
+                    {
+                        //repeats code from above but with no pause inbetween
+                        int matIndex = textInfo.characterInfo[i].materialReferenceIndex;
+                        newVertexColors = textInfo.meshInfo[matIndex].colors32;
+                        int vertIndex = textInfo.characterInfo[i].vertexIndex;
+                        if (textInfo.characterInfo[i].isVisible)
+                        {
+                            Color color = colors[i];
+
+                            newVertexColors[vertIndex + 0] = color;
+                            newVertexColors[vertIndex + 1] = color;
+                            newVertexColors[vertIndex + 2] = color;
+                            newVertexColors[vertIndex + 3] = color;
+                            m_TextComponent.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
+                        }
+                    }
+                    currentCharacter = characterCount; //final increment to break the while loop
+                }
+            }
             else
-                yield return new WaitForSeconds(0.08f * textSpeed);
+            {
+                skipTimer = 0;
+            }
+            yield return new WaitForSeconds(0.04f * textSpeed);
         }
 
         DialogueManager.Instance.FinishedTyping();
-    }
 
+    }
 }

@@ -31,6 +31,7 @@ public class Charge : MonoBehaviour
     public PlaySound chargeSound;
     public GameObject chargeEffect;
     public ParticleSystem chargeShockwave;
+    public PlaySound reboundSound;
 
     // Start is called before the first frame update
     void Start()
@@ -78,11 +79,12 @@ public class Charge : MonoBehaviour
         {
             if (CheckCollisions())
             {
-                Vector3 newV = (-transform.forward + (transform.up * 10f)).normalized * 10f;
+                reboundSound.Play(transform.position);
+                Vector3 newV = (-transform.forward + (Vector3.up * 50f)).normalized * 10f;
                 playerMove.SetSpeed(-12f);
                 playerMove.SetVelocity(newV);
-                StopCharge();
                 StartCoroutine("Bounce");
+                StopCharge();
                 return;
             }
         }

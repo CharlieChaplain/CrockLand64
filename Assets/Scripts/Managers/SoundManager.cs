@@ -26,7 +26,7 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    private void Start()
+    public void OnSceneLoad()
     {
         music = GameObject.Find("Main Camera/Music").GetComponent<Music>();
     }

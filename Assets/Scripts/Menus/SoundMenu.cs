@@ -80,6 +80,7 @@ public class SoundMenu : Menu
     }
     public override void Leave()
     {
+        base.Leave();
         soundMenuAnim.SetBool("Show", false);
     }
 }

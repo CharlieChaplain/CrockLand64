@@ -6,27 +6,42 @@ public class Pause : MonoBehaviour
 {
     public static bool activatePause = true;
 
-    bool canPause = true;
-    bool pressed = false;
-    bool paused = false;
+    protected bool canPause = true;
+    protected bool pressed = false;
+    protected bool paused = false;
+    protected bool oldCanMove; //what playermanager.canmove was before the pause. Prevents gaining control during cutscenes and stuff just by pausing
 
     float oldTimeScale = 1f;
 
     public Animator fadeAnim;
 
-    Menu currentMenu;
+    protected Menu currentMenu;
 
     public List<Menu> allMenus;
 
+    public AudioSource pauseMusic;
+
+    public PlaySound menuOpenSound;
+    public PlaySound menuCloseSound;
+
     // Start is called before the first frame update
-    void Start()
+    protected virtual void Start()
     {
         currentMenu = allMenus[0];
+
+        foreach(Menu menu in allMenus)
+        {
+            menu.pause = this;
+        }
+
+        activatePause = true;
     }
 
     // Update is called once per frame
     void Update()
     {
+        pauseMusic.volume = SoundManager.Instance.musicVolume;
+
         canPause = CheckCanPause();
 
         if (Input.GetButton("Pause") && canPause)
@@ -64,6 +79,7 @@ public class Pause : MonoBehaviour
     {
         paused = true;
         PlayerManager.Instance.paused = true;
+        oldCanMove = PlayerManager.Instance.canMove;
         PlayerManager.Instance.canMove = false;
 
         currentMenu = allMenus[0];
@@ -72,6 +88,11 @@ public class Pause : MonoBehaviour
         oldTimeScale = Time.timeScale;
         Time.timeScale = 0;
 
+        SoundManager.Instance.music.Pause();
+        pauseMusic.PlayDelayed(0.2f);
+
+        menuOpenSound.Play(CameraManager.Instance.sceneCam.transform);
+
         currentMenu.Enter();
     }
 
@@ -79,13 +100,17 @@ public class Pause : MonoBehaviour
     {
         paused = false;
         PlayerManager.Instance.paused = false;
-        PlayerManager.Instance.canMove = true;
+        PlayerManager.Instance.canMove = oldCanMove;
 
         Time.timeScale = oldTimeScale;
 
+        SoundManager.Instance.music.UnPause();
+        pauseMusic.Stop();
+
+        menuCloseSound.Play(CameraManager.Instance.sceneCam.transform);
+
         currentMenu.Leave();
     }
-
     public static void SetPause(bool value)
     {
         activatePause = value;
@@ -93,7 +118,7 @@ public class Pause : MonoBehaviour
     /// <summary>
     /// Changes the current menu displayed based on a given index
     /// </summary>
-    /// <param name="index">0 = main pause menu; 1 = options root menu; 2 = treasure root menu</param>
+    /// <param name="index">0 = main pause menu; 1 = options root menu; 2 = treasure root menu; 3 = audio menu</param>
     public void ChangeMenu(int index)
     {
         currentMenu.Leave();
@@ -105,5 +130,10 @@ public class Pause : MonoBehaviour
     public bool CheckMenu(int i)
     {
         return currentMenu == allMenus[i];
+    }
+
+    public Menu GetCurrentMenu()
+    {
+        return currentMenu;
     }
 }

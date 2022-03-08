@@ -21,7 +21,7 @@ public class TreasureMenu : Menu
     // Update is called once per frame
     protected override void Update()
     {
-        if (!PlayerManager.Instance.paused || !pause.CheckMenu(2))
+        if (!PlayerManager.Instance.paused || !active)
             return;
         if (!pressed)
         {
@@ -87,6 +87,7 @@ public class TreasureMenu : Menu
     }
     public override void Leave()
     {
+        base.Leave();
         treasureAnim.SetBool("Visible", false);
         SOClose.Play(CameraManager.Instance.sceneCam.transform.position);
     }

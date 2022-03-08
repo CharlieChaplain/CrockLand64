@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sound: {fileID: 8300000, guid: e109fa6d597a4674f8117bedc9ca9cdf, type: 3}
   volume: 0
+  distance: 100
   loop: 1

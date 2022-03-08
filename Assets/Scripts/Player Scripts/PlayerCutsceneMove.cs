@@ -24,6 +24,11 @@ public class PlayerCutsceneMove : MonoBehaviour
         StartCoroutine("MovePlayer");
     }
 
+    public void StopMove()
+    {
+        StopCoroutine("MovePlayer");
+    }
+
     IEnumerator MovePlayer()
     {
         float distance;

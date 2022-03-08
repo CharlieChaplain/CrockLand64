@@ -32,11 +32,15 @@ public class SceneDirector : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        StartCoroutine("WaitToFadeIn");
+
         //-----------------Do all On Scene Load stuff here---------------------
 
+        CameraManager.Instance.OnSceneLoad();
         PlayerManager.Instance.OnSceneLoad();
         IrisWipe.Instance.OnSceneLoad();
-        CameraManager.Instance.OnSceneLoad();
+        SoundManager.Instance.OnSceneLoad();
+        TreasureMaster.Instance.OnSceneLoad();
     }
 
     public static void LoadScene(string sceneName)
@@ -48,5 +52,13 @@ public class SceneDirector : MonoBehaviour
     {
         Scene scene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(scene.name);
+    }
+
+    //will wait a small amount of time so that things can load properly
+    IEnumerator WaitToFadeIn()
+    {
+        yield return new WaitForSeconds(2f);
+        IrisWipe.Instance.WipeIn();
+        PlayerManager.Instance.canMove = true;
     }
 }

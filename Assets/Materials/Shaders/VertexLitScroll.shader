@@ -39,7 +39,7 @@ Shader "Custom/VertexLitScroll" {
 
 						//Vertex lighting 
 						o.color = float4(ShadeVertexLightsFull(v.vertex, v.normal, 4, true), 1.0);
-						o.color *= v.color;
+						//o.color *= v.color;
 
 						float distance = length(mul(UNITY_MATRIX_MV,v.vertex));
 

@@ -182,10 +182,35 @@ public class DialogueManager : MonoBehaviour
         nextArrow.SetActive(false);
         currentDialogue.npc.ToggleTalking(true);
 
-        //Starts the typing coroutine
+        //Creates variables so we can prune the sentence of special characters and use them to change the color of each char
+        string newSentence = "";
+        List<Color> sentenceColors = new List<Color>();
+
+        //loops through current sentence, removes special characters, and changes the color of each accordingly.
+        Color col = Color.white;
+        for(int i = 0; i < sentence.Length; i++)
+        {
+            if(sentence[i] == '[')
+            {
+                col = Color.yellow;
+            }else if (sentence[i] == ']')
+            {
+                col = Color.white;
+            }
+            else
+            {
+                sentenceColors.Add(col);
+                newSentence += sentence[i];
+            }
+        }
+        //sets the TMP text to the pruned sentence.
+        dialogueText.text = newSentence;
+
+        //resets whole textbox to be invis to start
         dialogueText.color = new Color(255f, 255f, 255f, 0);
-        dialogueText.text = sentence;
-        dialogueText.gameObject.GetComponent<VertexColorChanger>().StartColorChanger(textSpeed);
+
+        //Starts the typing coroutine
+        dialogueText.gameObject.GetComponent<VertexColorChanger>().StartColorChanger(textSpeed, sentenceColors);
     }
 
     public void EndDialogue()
@@ -241,3 +266,5 @@ public class DialogueManager : MonoBehaviour
     }
     */
 }
+
+

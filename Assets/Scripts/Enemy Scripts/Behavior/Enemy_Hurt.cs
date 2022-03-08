@@ -19,7 +19,7 @@ public class Enemy_Hurt : MonoBehaviour
     {
         if (other.gameObject.layer == 9) //9 = player
         {
-            other.GetComponent<Hurt>().HurtPlayer((int)hurtBox.damage, damageVariance, transform.position);
+            other.GetComponent<Hurt>().HurtPlayer(hurtBox.damage, (int)hurtBox.damage, damageVariance, transform.position);
         }
     }
 }
