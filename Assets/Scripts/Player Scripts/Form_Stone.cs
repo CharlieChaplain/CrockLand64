@@ -15,11 +15,23 @@ public class Form_Stone : MonoBehaviour
 
     float timer;
     int stage;
+    PlayerMove playerMove;
+
+    public void StoneInit(PlayerMove pm)
+    {
+        timer = 0;
+        stage = 0;
+        GetComponent<ChangeModel>().ChangeTexture(0, textures[0]);
+        SO_Init.Play(transform.position);
+        parts.Play();
+
+        playerMove = pm;
+    }
 
     /// <summary>
     /// call this every frame when in stone form
     /// </summary>
-    public void stoneUpdate()
+    public void StoneUpdate()
     {
         timer += Time.deltaTime;
 
@@ -40,14 +52,5 @@ public class Form_Stone : MonoBehaviour
                 parts.Play();
             }
         }
-    }
-
-    public void stoneInit()
-    {
-        timer = 0;
-        stage = 0;
-        GetComponent<ChangeModel>().ChangeTexture(0, textures[0]);
-        SO_Init.Play(transform.position);
-        parts.Play();
     }
 }

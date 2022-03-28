@@ -41,6 +41,6 @@ public class Enemy_Wander : MonoBehaviour
             }
         }
 
-        return currentDir * speed;
+        return currentDir;
     }
 }

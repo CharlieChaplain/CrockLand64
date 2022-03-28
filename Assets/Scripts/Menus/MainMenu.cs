@@ -29,6 +29,8 @@ public class MainMenu : Menu
     bool copyingFile = false;
     int copyWhichFile = -1;
 
+    int fileToAffect; //gets changed to determine which file is being affected by the "play", "copy", and "erase" functions
+
     enum Mode
     {
         normal,
@@ -50,6 +52,8 @@ public class MainMenu : Menu
     // Update is called once per frame
     protected override void Update()
     {
+        canReturn = mode == Mode.normal && active;
+
         //makes sure we are "paused" and on the correct menu (this one)
         if (!PlayerManager.Instance.paused || !pause.CheckMenu(0) || !active)
             return;
@@ -90,7 +94,6 @@ public class MainMenu : Menu
         if (Input.GetAxisRaw("Vertical") == 0 && Input.GetAxisRaw("Horizontal") == 0)
             pressed = false;
 
-        canReturn = mode == Mode.normal;
     }
 
     public override void Logic()
@@ -263,14 +266,25 @@ public class MainMenu : Menu
     public override void Leave()
     {
         mainAnim.SetBool("Show", false);
-
+        active = false;
         if(!PlayerManager.Instance.paused)
             titleAnim.SetBool("Show", true);
     }
 
     public override void AcceptVerification()
     {
-        Debug.Log("yes");
+        switch (mode)
+        {
+            case Mode.copy:
+                Copy();
+                break;
+            case Mode.erase:
+                Erase();
+                break;
+            default:
+                ContinueGame();
+                break;
+        }
     }
 
     public override void SetActive(bool _active)
@@ -296,6 +310,7 @@ public class MainMenu : Menu
     //determines what to do when a file is selected
     void Action(int fileNum)
     {
+        fileToAffect = fileNum;
         switch (mode){
             case Mode.copy:
                 if (!copyingFile)
@@ -320,17 +335,18 @@ public class MainMenu : Menu
 
     void ContinueGame()
     {
-        Debug.Log("continuegame");
+        Debug.Log("continuegame " + fileToAffect);
     }
 
-    void Copy(int fileToCopy, int fileOverwritten)
+    void Copy()
     {
-        Debug.Log("Copy " + fileToCopy + " to " + fileOverwritten);
+        Debug.Log("Copy " + copyWhichFile + " to " + fileToAffect);
     }
 
     void Erase()
     {
-        Debug.Log("Erase");
+        fileImages[fileToAffect - 1].EraseFile();
+        Debug.Log("Erase " + fileToAffect);
     }
 
     //will check to see if images should tremble in fear of being erased, if the cursor is hovering them and the mode is erase

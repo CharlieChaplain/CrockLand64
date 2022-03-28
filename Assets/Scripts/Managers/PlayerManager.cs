@@ -36,7 +36,8 @@ public class PlayerManager : MonoBehaviour
     public enum PlayerForm
     {
         none,
-        stone
+        stone,
+        ghost
     }
 
     public PlayerState currentState;

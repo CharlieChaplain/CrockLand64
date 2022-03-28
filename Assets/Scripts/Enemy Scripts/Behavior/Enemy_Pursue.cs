@@ -10,6 +10,6 @@ public class Enemy_Pursue : MonoBehaviour
 
     public Vector3 Pursue()
     {
-        return (target.transform.position - transform.position).normalized * speed;
+        return (target.transform.position - transform.position).normalized;
     }
 }

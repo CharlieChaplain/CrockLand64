@@ -41,6 +41,7 @@ public class PlayerMove : MonoBehaviour
     private float terminalVelocity = -40.0f;
     private float oldDownGravMult;
     private float oldUpGravMult;
+    private float oldGravMult;
 
     public float turnSpeed = 0.1f;
     private float turnSmoothing;
@@ -87,6 +88,7 @@ public class PlayerMove : MonoBehaviour
     public GameObject buttonAlert; //shows up when crock can do things with a button
 
     Form_Stone stone;
+    Form_Ghost ghost;
 
     const float ROOT2 = 1.414f;
 
@@ -98,6 +100,7 @@ public class PlayerMove : MonoBehaviour
         currentFormJumpHeight = jumpHeight;
         oldDownGravMult = downGravMult;
         oldUpGravMult = upGravMult;
+        oldGravMult = gravityMult;
         oldMaxSpeed = maxSpeed;
         oldECSpeed = edgeCorrectionSpeed;
         oldSlopeLimit = controller.slopeLimit;
@@ -107,6 +110,7 @@ public class PlayerMove : MonoBehaviour
 
         swim = GetComponent<Swim>();
         stone = GetComponent<Form_Stone>();
+        ghost = GetComponent<Form_Ghost>();
     }
 
     void Update()
@@ -191,7 +195,13 @@ public class PlayerMove : MonoBehaviour
         {
             case PlayerManager.PlayerForm.stone:
                 Move(stone.speed, stone.turnSpeed, canMove);
-                stone.stoneUpdate();
+                stone.StoneUpdate();
+                break;
+            case PlayerManager.PlayerForm.ghost:
+                Move(ghost.speed, ghost.turnSpeed, canMove);
+                ghost.GhostUpdate(grounded);
+                velocity += ghost.VerticalMovement();
+                velocity.y = Mathf.Clamp(velocity.y, -ghost.maxVertSpeed, ghost.maxVertSpeed);
                 break;
             default:
                 break;
@@ -213,6 +223,7 @@ public class PlayerMove : MonoBehaviour
                 currentFormJumpHeight = oldJumpHeight;
                 GetComponent<ChangeModel>().ChangeModelTo(0);
                 anim.runtimeAnimatorController = animController;
+                gravityMult = oldGravMult;
                 break;
             case PlayerManager.PlayerForm.stone:
                 PlayerManager.Instance.currentForm = PlayerManager.PlayerForm.stone;
@@ -221,7 +232,15 @@ public class PlayerMove : MonoBehaviour
                 currentFormJumpHeight = stone.jumpHeight;
                 GetComponent<ChangeModel>().ChangeModelTo(2);
                 anim.runtimeAnimatorController = stone.animController;
-                stone.stoneInit();
+                stone.StoneInit(this);
+                break;
+            case PlayerManager.PlayerForm.ghost:
+                PlayerManager.Instance.currentForm = PlayerManager.PlayerForm.ghost;
+                PlayerManager.Instance.currentState = PlayerManager.PlayerState.transformed;
+                GetComponent<ChangeModel>().ChangeModelTo(3);
+                anim.runtimeAnimatorController = ghost.animController;
+                gravityMult *= 0.2f;
+                ghost.GhostInit(this);
                 break;
             default:
                 break;
@@ -278,6 +297,7 @@ public class PlayerMove : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
+        Gizmos.DrawSphere(transform.position, groundCheckRadius);
     }
 
     private void LateUpdate()
@@ -315,13 +335,14 @@ public class PlayerMove : MonoBehaviour
         
 
         Vector3 position = sphereCastOrigin + (Vector3.down * sphereCastLength);
+        /*
         Debug.DrawLine(sphereCastOrigin, position, Color.blue);
         for (int i = 0; i < 30; i++) {
             Debug.DrawLine(position,
                 position + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 0f), Random.Range(-1f, 1f)).normalized * sphereCastRadius,
                 Color.red);
         }
-
+        */
         RaycastHit hit;
 
         //checks if crock is touching ground but isn't grounded. RaycastHit gives more info than a simple sphere check
@@ -413,22 +434,27 @@ public class PlayerMove : MonoBehaviour
     {
         //checks if on slope and moving, and if so, pushes the character further down to prevent bouncing when moving down a slope
 
+        //leaves if player is in a state where this behavior is undesirable
         if (jumping)
             return;
 
         RaycastHit hit;
+        
 
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, controller.height / 2f * slopeRayMultiplier, groundMask))
+        //if (Physics.Raycast(transform.position, Vector3.down, out hit, controller.height / 2f * slopeRayMultiplier, groundMask))
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, 0.5f, groundMask) && ungroundTimerUp)
         {
+            //if player is charging, multiply the slope force by A LOT
+            float correctionMult = 1f;
+            if (GetComponent<Charge>().GetCharging())
+                correctionMult = 10f;
+
+            if (PlayerManager.Instance.currentForm == PlayerManager.PlayerForm.ghost)
+                correctionMult = 0.02f;
 
             if (hit.normal != Vector3.up)
             {
-                //if player is charging, multiply the slope force by A LOT
-                float chargeMult = 1f;
-                if (GetComponent<Charge>().GetCharging())
-                    chargeMult = 10f;
-
-                controller.Move(Vector3.down * controller.height / 2f * slopeForceMultiplier * chargeMult * Time.deltaTime);
+                controller.Move(Vector3.down * controller.height / 2f * slopeForceMultiplier * correctionMult * Time.deltaTime);
             }
         }
     }
@@ -779,6 +805,9 @@ public class PlayerMove : MonoBehaviour
 
     void Jump()
     {
+        if (PlayerManager.Instance.currentForm == PlayerManager.PlayerForm.ghost)
+            return;
+
         if (Input.GetButtonDown("Jump") &&
             ((PlayerManager.Instance.currentState != PlayerManager.PlayerState.swimming && grounded) ||
             (PlayerManager.Instance.currentState == PlayerManager.PlayerState.swimming && swim.IsPaddling())) &&

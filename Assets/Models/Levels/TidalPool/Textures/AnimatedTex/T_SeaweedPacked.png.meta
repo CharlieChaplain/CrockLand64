@@ -48,7 +48,7 @@ TextureImporter:
       213: 1723304137113305956
     second: T_SeaweedPacked_14
   externalObjects: {}
-  serializedVersion: 10
+  serializedVersion: 11
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -68,6 +68,8 @@ TextureImporter:
   isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -76,12 +78,12 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: -1
-    aniso: -1
-    mipBias: -100
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
     wrapU: 1
     wrapV: 1
-    wrapW: -1
+    wrapW: 0
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -99,9 +101,13 @@ TextureImporter:
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -455,6 +461,22 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      T_SeaweedPacked_10: -165066106544516540
+      T_SeaweedPacked_5: -2507394169489523356
+      T_SeaweedPacked_9: -7734341569021179677
+      T_SeaweedPacked_3: 4395971098842627938
+      T_SeaweedPacked_4: 4046062119390618695
+      T_SeaweedPacked_7: 2916494612923174096
+      T_SeaweedPacked_2: -9146174439746122323
+      T_SeaweedPacked_11: 4701407430726447626
+      T_SeaweedPacked_13: 8790751882306182991
+      T_SeaweedPacked_8: 2902558008818861605
+      T_SeaweedPacked_0: -2154225474565669733
+      T_SeaweedPacked_14: 1723304137113305956
+      T_SeaweedPacked_12: -1533367531007039941
+      T_SeaweedPacked_1: 4668788326411165769
+      T_SeaweedPacked_6: 6822672028033046297
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

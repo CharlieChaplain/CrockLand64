@@ -40915,6 +40915,7 @@ MonoBehaviour:
   - {fileID: 4381454792350094727, guid: 6ef29beb5cb07b447b289c02a88066e4, type: 3}
   - {fileID: -6382387393640462818, guid: a0a51db196f9344448feb08ac73ccbd2, type: 3}
   - {fileID: -8385332107055829245, guid: 06e4ea7c75360124bab00efc99c6d3ff, type: 3}
+  - {fileID: 4381454792350094727, guid: 6e448a27893f4ed49a51095598947fd8, type: 3}
 --- !u!114 &6231923713357583245
 MonoBehaviour:
   m_ObjectHideFlags: 0
