@@ -20,16 +20,18 @@ public class InputManager : MonoBehaviour
     }
 
     public bool keyboardInput = true;
+    public _Controls controls;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        controls = GetComponent<_InputControl>().GetControl();
     }
 
     // Update is called once per frame
     void Update()
     {
+        /*
         if (CheckController())
         {
             keyboardInput = false;
@@ -46,6 +48,7 @@ public class InputManager : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.None;
         }
+        */
     }
 
     bool CheckController()

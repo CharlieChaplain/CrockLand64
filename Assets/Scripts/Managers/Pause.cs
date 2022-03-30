@@ -44,36 +44,44 @@ public class Pause : MonoBehaviour
 
         canPause = CheckCanPause();
 
-        if (Input.GetButton("Pause") && canPause)
-        {
-            canPause = false;
-            pressed = true;
-
-            if (paused)
-                UnPauseGame();
-            else
-                PauseGame();
-        }
-
-        if (paused && currentMenu == allMenus[0] && Input.GetButtonDown("Cancel") && !pressed)
-            UnPauseGame();
-
-        if (!Input.GetButton("Pause") && pressed)
-            pressed = false;
-
         fadeAnim.SetBool("Paused", paused);
-
-        if (paused)
-        {
-            currentMenu.Logic();
-        }
     }
+
+    public void PauseListener()
+    {
+        if (!canPause)
+            return;
+        if (paused)
+            UnPauseGame();
+        else
+            PauseGame();
+    }
+
+    //these three pass down the unity event that gets called during input to the current menu so it can perform it's logic.
+    public void PauseCursorMovement(float x, float y)
+    {
+        Vector2 input = new Vector2(x, y);
+        if (input == Vector2.zero)
+            pressed = false;
+        if (!paused || pressed)
+            return;
+        if (input != Vector2.zero)
+            pressed = true;
+        currentMenu.CursorMovement(input);
+    }
+    public void PauseConfirm()
+    {
+        currentMenu.Confirm();
+    }
+    public void PauseCancel()
+    {
+        currentMenu.Cancel();
+    }
+
+    //this method is extra complication now but is possibly futureproofing. Add more conditionals here if needed
     bool CheckCanPause()
     {
-        bool check = true;
-        if (pressed)
-            check = false;
-        return check && activatePause;
+        return activatePause;
     }
     void PauseGame()
     {
@@ -96,7 +104,7 @@ public class Pause : MonoBehaviour
         currentMenu.Enter();
     }
 
-    void UnPauseGame()
+    public void UnPauseGame()
     {
         paused = false;
         PlayerManager.Instance.paused = false;

@@ -34,6 +34,7 @@ public class PlayerMove : MonoBehaviour
     public float accel = 1f;
     private float decel;
 
+    private Vector2 input;
     private Vector3 velocity;
     public float gravityMult = 0.25f;
     public float upGravMult = 0.4f;
@@ -129,7 +130,7 @@ public class PlayerMove : MonoBehaviour
                 break;
             case PlayerManager.PlayerState.charging:
                 if(grounded)
-                    velocity = GetComponent<Charge>().ChargeMove(cam);
+                    velocity = GetComponent<Charge>().ChargeMove(cam, input);
                 break;
             case PlayerManager.PlayerState.crouching:
                 Move(maxSpeed, turnSpeed, canMove);
@@ -157,21 +158,14 @@ public class PlayerMove : MonoBehaviour
                 break;
 
         }
-        if (canMove)
-        {
-            Jump();
-        }
 
-        if(PlayerManager.Instance.currentState != PlayerManager.PlayerState.swimming &&
+        if (PlayerManager.Instance.currentState != PlayerManager.PlayerState.swimming &&
            PlayerManager.Instance.currentState != PlayerManager.PlayerState.ladder)
         {
-            GetComponent<Attack>().AttackLogic();
-
             if (canMove)
             {
                 if(PlayerManager.Instance.currentState != PlayerManager.PlayerState.sliding)
                     CheckCrouch();
-
                 anim.SetFloat("Speed", speed);
             }
 
@@ -184,6 +178,11 @@ public class PlayerMove : MonoBehaviour
             slidingLastFrame = sliding;
             crouchingLastFrame = crouching;
         }
+    }
+
+    public void OnMoveListener(float x, float y)
+    {
+        input = new Vector2(x,y);
     }
 
     /// <summary>
@@ -254,7 +253,6 @@ public class PlayerMove : MonoBehaviour
             //if you land on an enemy you get bounced. Doesn't work perfectly as of now
             if (!grounded)
             {
-                //Debug.Log("boing");
                 velocity = new Vector3(velocity.x, 10f, velocity.z);
             }
         }
@@ -274,13 +272,14 @@ public class PlayerMove : MonoBehaviour
             buttonAlert.SetActive(true);
             buttonAlert.GetComponent<Animator>().SetBool("Active", true);
 
+            /*
             if (Input.GetButtonDown("Punch"))
             {
                 other.GetComponent<NPC>().Engage();
 
                 StartCoroutine(ButtonAlertDisappear());
             }
-            
+            */
         }
         else
         {
@@ -360,12 +359,7 @@ public class PlayerMove : MonoBehaviour
     {
         functionalMaxSpeed = Mathf.Lerp(functionalMaxSpeed, _maxSpeed, 0.1f);
 
-        //speeds up turning radius depending on speed and also if the stick movements are small
-        //float actualTurnSpeed = _turnSpeed / speed
-
-        float horz = Input.GetAxis("Horizontal");
-        float vert = Input.GetAxis("Vertical");
-        Vector3 direction = new Vector3(horz, 0f, vert);
+        Vector3 direction = new Vector3(input.x, 0f, input.y);
         if (direction.magnitude > 1)
             direction.Normalize();
 
@@ -535,9 +529,14 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    public void CrouchListener(bool pressed)
+    {
+        crouchPressed = pressed;
+    }
+
     void CheckCrouch()
     {
-        crouching = Input.GetAxis("Crouch") > 0 && grounded && PlayerManager.Instance.currentState != PlayerManager.PlayerState.transformed;
+        crouching = crouchPressed && grounded && PlayerManager.Instance.currentState != PlayerManager.PlayerState.transformed;
 
         //keeps crock crouching if he's under a low ceiling
         floorAbove = Physics.Raycast(transform.position + (Vector3.up * controller.height), Vector3.up, (controller.height / 2f) + 0.1f);
@@ -566,8 +565,6 @@ public class PlayerMove : MonoBehaviour
         //changes Player State
         if (crouching && !crouchingLastFrame)
         {
-            crouchPressed = true;
-
             if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.charging)
                 GetComponent<Charge>().StopCharge();
             PlayerManager.Instance.currentState = PlayerManager.PlayerState.crouching;
@@ -602,9 +599,6 @@ public class PlayerMove : MonoBehaviour
                 maxSpeed = oldMaxSpeed;
             }
         }
-
-        if (crouchPressed && Input.GetAxis("Crouch") == 0)
-            crouchPressed = false;
     }
 
     void CheckSwimming()
@@ -764,10 +758,7 @@ public class PlayerMove : MonoBehaviour
 
             model.transform.localRotation = Quaternion.identity;
         }
-
-        float horz = Input.GetAxis("Horizontal");
-        float vert = Input.GetAxis("Vertical");
-        Vector3 direction = Quaternion.Euler(0, cam.eulerAngles.y, 0) * new Vector3(horz, 0f, vert);
+        Vector3 direction = Quaternion.Euler(0, cam.eulerAngles.y, 0) * new Vector3(input.x, 0f, input.y);
 
         Vector3 move = Vector3.zero;
         float directionMult = 1f; //will multiply direction later so it's easier to turn
@@ -803,13 +794,17 @@ public class PlayerMove : MonoBehaviour
         SlopeCorrection();
     }
 
-    void Jump()
+    public void Jump(bool started)
     {
-        if (PlayerManager.Instance.currentForm == PlayerManager.PlayerForm.ghost)
+        //jump is called when jump button is pressed and released, so this prevents the function from running twice.
+        if (!started)
             return;
 
-        if (Input.GetButtonDown("Jump") &&
-            ((PlayerManager.Instance.currentState != PlayerManager.PlayerState.swimming && grounded) ||
+        if (PlayerManager.Instance.currentForm == PlayerManager.PlayerForm.ghost ||
+            !PlayerManager.Instance.canMove)
+            return;
+
+        if (((PlayerManager.Instance.currentState != PlayerManager.PlayerState.swimming && grounded) ||
             (PlayerManager.Instance.currentState == PlayerManager.PlayerState.swimming && swim.IsPaddling())) &&
             !jumping)
         {
@@ -860,7 +855,7 @@ public class PlayerMove : MonoBehaviour
             ungroundTimerUp = false;
             StartCoroutine("UngroundTimer");
         }
-
+        /*
         //variable jump height only when in normal state
         if (!GetComponent<Charge>().GetCharging() && !crouching && Input.GetAxis("Jump") > 0)
         {
@@ -869,6 +864,20 @@ public class PlayerMove : MonoBehaviour
         {
             upGravMult = oldUpGravMult;
         }
+        */
+    }
+
+    public void JumpAlterGrav(bool held)
+    {
+        //variable jump height only when in normal state
+        if (GetComponent<Charge>().GetCharging() || crouching)
+            return;
+
+        //lowers grav if button is held. Essentially holding button = higher jump.
+        float gravMult = 1f;
+        if (held)
+            gravMult = 0.45f;
+        upGravMult = oldUpGravMult * gravMult;
     }
 
     //used to lean crock to one side if he's turning

@@ -11,4 +11,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/CajolmecTemple.unity
     guid: 74ff0bf2bfc46eb4f91bae584361a3ee
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.input.settings: {fileID: 11400000, guid: 2bd094ac472e4444baaa0502b4c9aa0d,
+      type: 2}

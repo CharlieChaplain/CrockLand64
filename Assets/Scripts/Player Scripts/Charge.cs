@@ -18,7 +18,6 @@ public class Charge : MonoBehaviour
     private float chargeTimer = 0f;
 
     private bool charging = false; //keeps track of if the player is currently charging
-    private bool pressed = false; //keeps track if the button was already pressed this charge (prevents holding the button)
 
     public TrailRenderer trail;
 
@@ -48,11 +47,6 @@ public class Charge : MonoBehaviour
     {
         anim.SetBool("Charging", charging);
 
-        if(playerMove.GetGrounded() && Input.GetAxis("Charge") > 0 && !charging && !pressed && PlayerManager.Instance.canMove &&
-            PlayerManager.Instance.currentState == PlayerManager.PlayerState.normal)
-        {
-            StartCharge();
-        }
         //counts down and eventually ends the charge after an amount of time
         if(charging)
         {
@@ -63,11 +57,6 @@ public class Charge : MonoBehaviour
                 StopCharge();
             }
                 
-        }
-
-        if(Input.GetAxis("Charge") == 0)
-        {
-            pressed = false;
         }
 
         chargeEffect.SetActive(playerMove.GetGrounded() && charging);
@@ -90,13 +79,11 @@ public class Charge : MonoBehaviour
         }
     }
 
-    public Vector3 ChargeMove(Transform cam)
+    public Vector3 ChargeMove(Transform cam, Vector2 input)
     {
         float angle = 0f;
 
-        float horz = Input.GetAxis("Horizontal");
-        float vert = Input.GetAxis("Vertical");
-        Vector3 direction = new Vector3(horz, 0f, vert);
+        Vector3 direction = new Vector3(input.x, 0f, input.y);
 
         if(direction != Vector3.zero)
         {
@@ -133,11 +120,14 @@ public class Charge : MonoBehaviour
         return velocity;
     }
 
-    void StartCharge()
+    public void StartCharge(bool listener)
     {
+        if (!playerMove.GetGrounded() || charging || !PlayerManager.Instance.canMove ||
+            PlayerManager.Instance.currentState != PlayerManager.PlayerState.normal)
+            return;
+
         HurtBoxInfo.ToggleHurtBox(GetComponent<Attack>().ChargeCollider, true);
 
-        pressed = true;
         PlayerManager.Instance.currentState = PlayerManager.PlayerState.charging;
         chargeTimer = chargeLength;
         charging = true;

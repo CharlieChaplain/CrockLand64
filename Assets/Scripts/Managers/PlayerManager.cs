@@ -97,6 +97,7 @@ public class PlayerManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        /*
         //TAKE THIS OUT AFTER TESTING
         if (Input.GetKey(KeyCode.LeftBracket))
         {
@@ -105,6 +106,7 @@ public class PlayerManager : MonoBehaviour
         {
             Time.timeScale = 1f;
         }
+        */
     }
 
     //this is used to wait a frame before forcing the camera position.

@@ -21,54 +21,11 @@ public class TreasureMenu : Menu
     // Update is called once per frame
     protected override void Update()
     {
-        if (!PlayerManager.Instance.paused || !active)
-            return;
-        if (!pressed)
-        {
-            if (Input.GetAxisRaw("Vertical") > 0)
-            {
-                pressed = true;
-                tCursor.MoveUp();
-                RecolorOptions();
-            }
-            else if (Input.GetAxisRaw("Vertical") < 0)
-            {
-                pressed = true;
-                tCursor.MoveDown();
-                RecolorOptions();
-            }
-
-            if (Input.GetAxisRaw("Horizontal") > 0)
-            {
-                pressed = true;
-                tCursor.MoveRight();
-                RecolorOptions();
-            }
-            else if (Input.GetAxisRaw("Horizontal") < 0)
-            {
-                pressed = true;
-                tCursor.MoveLeft();
-                RecolorOptions();
-            }
-        }
-
-        if (Input.GetAxisRaw("Vertical") == 0 && Input.GetAxisRaw("Horizontal") == 0)
-            pressed = false;
+        
     }
 
     public override void Logic()
     {
-        if (Input.GetButtonDown("Submit"))
-        {
-            // pull up info on treasure here
-            if(tCursor.currentSlot.y == 5f)
-            {
-                pause.ChangeMenu(0);
-            }
-        }
-
-        if(Input.GetButtonDown("Cancel"))
-            pause.ChangeMenu(0);
     }
 
     protected override void RecolorOptions()
@@ -90,5 +47,61 @@ public class TreasureMenu : Menu
         base.Leave();
         treasureAnim.SetBool("Visible", false);
         SOClose.Play(CameraManager.Instance.sceneCam.transform.position);
+    }
+
+    public override void CursorMovement(Vector2 input)
+    {
+        if (!PlayerManager.Instance.paused || !active)
+        {
+            return;
+        }
+        if (!pressed)
+        {
+            //checks which input is bigger, x or y
+            if (Mathf.Abs(input.y) > Mathf.Abs(input.x))
+            {
+                //vertical cursor movement
+                if (input.y > 0)
+                {
+                    tCursor.MoveUp();
+                    RecolorOptions();
+                }
+                else if (input.y < 0)
+                {
+                    tCursor.MoveDown();
+                    RecolorOptions();
+                }
+            }
+            else
+            {
+                //horizontal cursor movement
+                if (input.x > 0)
+                {
+                    tCursor.MoveRight();
+                    RecolorOptions();
+                }
+                else if (input.x < 0)
+                {
+                    tCursor.MoveLeft();
+                    RecolorOptions();
+                }
+            }
+        }
+    }
+    public override void Confirm()
+    {
+        if (!active)
+            return;
+        // pull up info on treasure here
+        if (tCursor.currentSlot.y == 5f)
+        {
+            pause.ChangeMenu(0);
+        }
+    }
+    public override void Cancel()
+    {
+        if (!active)
+            return;
+        pause.ChangeMenu(0);
     }
 }

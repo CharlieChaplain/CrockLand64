@@ -47,10 +47,6 @@ public class TreasureMaster : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Y))
-        {
-            Debug.Log(QueryTreasure(0, 0));
-        }
     }
 
     public void AddWealth(int amount)

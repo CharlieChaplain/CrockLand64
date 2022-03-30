@@ -20,27 +20,7 @@ public class OptionsMenu : Menu
 
     public override void Logic()
     {
-        if (Input.GetButtonDown("Submit"))
-        {
-            switch (cursor.currentOption)
-            {
-                case 0: //Display
-                    break;
-                case 1: //Audio
-                    pause.ChangeMenu(3);
-                    break;
-                case 2: //Controls
-                    break;
-                case 3: //Back
-                    pause.ChangeMenu(0);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        if (Input.GetButtonDown("Cancel"))
-            pause.ChangeMenu(0);
+        
     }
 
     public override void Enter()
@@ -52,5 +32,32 @@ public class OptionsMenu : Menu
     {
         base.Leave();
         optionsMenuAnim.SetBool("Show", false);
+    }
+
+    public override void Confirm()
+    {
+        if (!active)
+            return;
+        switch (cursor.currentOption)
+        {
+            case 0: //Display
+                break;
+            case 1: //Audio
+                pause.ChangeMenu(3);
+                break;
+            case 2: //Controls
+                break;
+            case 3: //Back
+                pause.ChangeMenu(0);
+                break;
+            default:
+                break;
+        }
+    }
+    public override void Cancel()
+    {
+        if (!active)
+            return;
+        pause.ChangeMenu(0);
     }
 }

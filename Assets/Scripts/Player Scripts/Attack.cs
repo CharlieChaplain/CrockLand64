@@ -6,7 +6,7 @@ public class Attack : MonoBehaviour
 {
     public bool canAttack = true;
     public bool attackDone = true;
-    bool buttonUp = true;
+    bool buttonHeld = false;
 
     PlayerMove playerMove;
     Animator anim;
@@ -52,20 +52,37 @@ public class Attack : MonoBehaviour
         initGravMult = playerMove.gravityMult;
         initTurnSpeed = playerMove.turnSpeed;
     }
-    public void AttackLogic()
+
+    private void FixedUpdate()
+    {
+        ThrowBuildup();
+        MatchTargetPos();
+        anim.SetBool("Carrying", carrying);
+    }
+
+    public void ButtonHeldListener(bool listener)
+    {
+        if (throwing && !listener)
+        {
+            Throw();
+        }
+
+        throwing = listener && carryTarget != null;
+    }
+
+    public void AttackLogic(bool listener)
     {
         if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.transformed)
             return;
 
         canAttack = PlayerManager.Instance.canMove &&
             PlayerManager.Instance.currentState == PlayerManager.PlayerState.normal &&
-            attackDone && buttonUp;
+            attackDone;
 
-        if(canAttack && Input.GetAxis("Punch") > 0)
+        if(canAttack)
         {
             if (playerMove.GetGrounded())
             {
-                buttonUp = false;
                 GetComponent<Idle>().StopIdle();
                 attackDone = false;
 
@@ -82,31 +99,33 @@ public class Attack : MonoBehaviour
                 }
             } else if (!playerMove.GetGrounded() && !playerMove.GetHiJumping())
             {
-                buttonUp = false;
                 GetComponent<Idle>().StopIdle();
                 attackDone = false;
 
                 //AirRoll
                 AirRoll();
             }
-        } else if (canAttack && Input.GetAxis("Crouch") > 0 && !playerMove.GetGrounded() && !playerMove.crouchPressed)
+        }
+
+        if (carrying)
+            GetComponent<Idle>().StopIdle();
+    }
+
+    public void AttackLogicGroundPound(bool listener)
+    {
+        if (!listener)
+            return;
+
+        canAttack = PlayerManager.Instance.canMove &&
+            PlayerManager.Instance.currentState == PlayerManager.PlayerState.normal &&
+            attackDone;
+
+        if (canAttack && !playerMove.GetGrounded())
         {
             attackDone = false;
             //GroundPound
             GroundPound();
         }
-
-        if (Input.GetAxis("Punch") == 0)
-            buttonUp = true;
-
-        anim.SetBool("Carrying", carrying);
-        MatchTargetPos();
-
-        if (carrying || throwing)
-            Throw();
-
-        if (carrying)
-            GetComponent<Idle>().StopIdle();
     }
 
     public void Punch()
@@ -145,15 +164,16 @@ public class Attack : MonoBehaviour
         PlayerManager.Instance.currentState = PlayerManager.PlayerState.carrying;
     }
 
-    //begins the throwing, deals with short throws and long throws
-    void Throw()
+    void ThrowBuildup()
     {
-        if((carrying || throwing) && Input.GetAxis("Punch") > 0)
+        if (!carrying)
+            return;
+        if (throwing)
         {
             throwFrameCounter++;
         }
-        
-        if(throwFrameCounter > 10 && Input.GetAxis("Punch") > 0)
+
+        if (throwFrameCounter > 10)
         {
             if (!windingUp)
             {
@@ -166,7 +186,18 @@ public class Attack : MonoBehaviour
             if (throwVectorMultiplier > 3f)
                 throwVectorMultiplier = 3f;
         }
-        else if((throwFrameCounter > 0 && throwFrameCounter <= 10) && Input.GetAxis("Punch") == 0)
+
+        //will drop the enemy if crock crouches
+        if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.crouching)
+        {
+            DropEnemy();
+        }
+    }
+    void Throw()
+    {
+        Debug.Log(throwFrameCounter);
+        Debug.Log(throwVectorMultiplier);
+        if ((throwFrameCounter > 0 && throwFrameCounter <= 10))
         {
             PlayerManager.Instance.canMove = false;
 
@@ -178,7 +209,54 @@ public class Attack : MonoBehaviour
             throwing = false;
             anim.SetTrigger("ThrowLight");
             throwFrameCounter = 0;
-        }else if(throwFrameCounter > 10 && Input.GetAxis("Punch") == 0)
+        }
+        else if (throwFrameCounter > 10)
+        {
+            throwVector = transform.forward;
+            throwVector *= throwVectorMultiplier;
+            throwVector *= 5f;
+
+            throwing = false;
+            anim.SetTrigger("Release");
+            throwFrameCounter = 0;
+        }
+        /*
+        bool held = InputManager.Instance.controls.EditableControls.Punch.WasPressedThisFrame();
+
+        if ((carrying || throwing))
+        {
+            if (held)
+                throwFrameCounter++;
+        }
+        else
+            return;
+
+        if(throwFrameCounter > 10 && held)
+        {
+            if (!windingUp)
+            {
+                anim.SetTrigger("ThrowHeavy");
+                windingUp = true;
+            }
+
+            playerMove.maxSpeed = 0.01f;
+            throwVectorMultiplier += Time.deltaTime;
+            if (throwVectorMultiplier > 3f)
+                throwVectorMultiplier = 3f;
+        }
+        else if((throwFrameCounter > 0 && throwFrameCounter <= 10) && !held)
+        {
+            PlayerManager.Instance.canMove = false;
+
+            throwVector = transform.forward;
+            throwVector.y = 0.5f;
+            throwVector.Normalize();
+            throwVector *= 5f;
+
+            throwing = false;
+            anim.SetTrigger("ThrowLight");
+            throwFrameCounter = 0;
+        }else if(throwFrameCounter > 10 && !held)
         {
             throwVector = transform.forward;
             throwVector *= throwVectorMultiplier;
@@ -194,6 +272,7 @@ public class Attack : MonoBehaviour
         {
             DropEnemy();
         }
+        */
     }
 
     //the actual point the enemy/object leaves crock's hands. Is triggered via an animation event

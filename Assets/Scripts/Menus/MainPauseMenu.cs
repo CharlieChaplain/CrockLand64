@@ -23,28 +23,11 @@ public class MainPauseMenu : Menu
     // Update is called once per frame
     protected override void Update()
     {
-        base.Update();
     }
 
     public override void Logic()
     {
-        if (Input.GetButtonDown("Submit"))
-        {
-            switch (cursor.currentOption)
-            {
-                case 0:
-                    pause.ChangeMenu(1);
-                    break;
-                case 1:
-                    pause.ChangeMenu(2);
-                    break;
-                case 2:
-                    SaveAndQuit();
-                    break;
-                default:
-                    break;
-            }
-        }
+        
     }
 
     void SaveAndQuit()
@@ -80,6 +63,32 @@ public class MainPauseMenu : Menu
         wealthAnim.SetTrigger("Leave");
         wealthCounter.isVisible = false;
         wealthCounter.visibleTimer = 0;
+    }
+
+    public override void Confirm()
+    {
+        if (!active)
+            return;
+        switch (cursor.currentOption)
+        {
+            case 0:
+                pause.ChangeMenu(1);
+                break;
+            case 1:
+                pause.ChangeMenu(2);
+                break;
+            case 2:
+                SaveAndQuit();
+                break;
+            default:
+                break;
+        }
+    }
+    public override void Cancel()
+    {
+        if (!active)
+            return;
+        pause.UnPauseGame();
     }
 
     IEnumerator QuitGame(float time)

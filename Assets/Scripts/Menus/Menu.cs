@@ -27,28 +27,6 @@ public class Menu : MonoBehaviour
     // Update is called once per frame
     protected virtual void Update()
     {
-        if (!PlayerManager.Instance.paused || !active)
-        {
-            return;
-        }
-        if (!pressed)
-        {
-            if (Input.GetAxisRaw("Vertical") > 0)
-            {
-                pressed = true;
-                cursor.MoveUp();
-                RecolorOptions();
-            }
-            else if (Input.GetAxisRaw("Vertical") < 0)
-            {
-                pressed = true;
-                cursor.MoveDown();
-                RecolorOptions();
-            }
-        }
-
-        if ((Input.GetAxisRaw("Vertical") == 0))
-            pressed = false;
     }
 
     protected virtual void RecolorOptions()
@@ -85,6 +63,34 @@ public class Menu : MonoBehaviour
 
     //used when a yes or no submenu is added on top of this menu
     public virtual void AcceptVerification()
+    {
+
+    }
+
+    public virtual void CursorMovement(Vector2 input)
+    {
+        if (!PlayerManager.Instance.paused || !active)
+        {
+            return;
+        }
+        if (!pressed)
+        {
+            if (input.y > 0)
+            {
+                cursor.MoveUp();
+                RecolorOptions();
+            }
+            else if (input.y < 0)
+            {
+                cursor.MoveDown();
+                RecolorOptions();
+            }
+        }
+    }
+    public virtual void Confirm()
+    {
+    }
+    public virtual void Cancel()
     {
 
     }

@@ -32,6 +32,7 @@ public class SoundCursor : MenuCursor
             float yPos = (((numOptions - 1) / 2f) * 40f) + 5f - (40f * currentOption);
             StopCoroutine("MoveCursor");
             StartCoroutine("MoveCursor", new Vector3(-90, yPos, 0)); //-90 is HARDCODED and is how far over the cursor is when hovering the back button
+            menuPipSound.Play(CameraManager.Instance.sceneCam.transform.position);
         }
         else
         {
@@ -39,6 +40,7 @@ public class SoundCursor : MenuCursor
             float yPos = (((numOptions - 1) / 2f) * 40f) + 5f - (40f * currentOption);
             StopCoroutine("MoveCursor");
             StartCoroutine("MoveCursor", new Vector3(PosAtZeroY.x, yPos, 0));
+            menuPipSound.Play(CameraManager.Instance.sceneCam.transform.position);
         }
     }
 
@@ -54,6 +56,7 @@ public class SoundCursor : MenuCursor
             float yPos = (((numOptions - 1) / 2f) * 40f) + 5f - (40f * currentOption);
             StopCoroutine("MoveCursor");
             StartCoroutine("MoveCursor", new Vector3(-131, yPos, 0)); //-131 is HARDCODED and is how far over the cursor is when hovering the sliders
+            menuPipSound.Play(CameraManager.Instance.sceneCam.transform.position);
         }
         else
         {
@@ -61,6 +64,7 @@ public class SoundCursor : MenuCursor
             float yPos = (((numOptions - 1) / 2f) * 40f) + 5f - (40f * currentOption);
             StopCoroutine("MoveCursor");
             StartCoroutine("MoveCursor", new Vector3(PosAtZeroY.x, yPos, 0));
+            menuPipSound.Play(CameraManager.Instance.sceneCam.transform.position);
         }
     }
 }
