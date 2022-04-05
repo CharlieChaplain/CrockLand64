@@ -78,8 +78,8 @@ public class CrockAnimListener : MonoBehaviour
 
     public void ToggleCarry()
     {
-        transform.root.GetComponent<Attack>().carrying = false;
-        transform.root.GetComponent<Attack>().throwing = true;
+        //transform.root.GetComponent<Attack>().carrying = false;
+        //transform.root.GetComponent<Attack>().throwing = true;
     }
 
     /// <summary>

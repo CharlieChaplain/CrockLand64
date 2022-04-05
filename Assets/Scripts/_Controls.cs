@@ -64,6 +64,15 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""PunchHeld"",
+                    ""type"": ""Button"",
+                    ""id"": ""5172f321-af58-4218-aa68-66804822aef4"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Hold(duration=0.8)"",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Charge"",
                     ""type"": ""Button"",
                     ""id"": ""94ff0bcd-9d13-4301-bd4e-ea64c24b29bc"",
@@ -351,6 +360,28 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
                     ""action"": ""Cancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0b3f88b1-40c8-4243-8d48-4a364f33ea93"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PunchHeld"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""407dcd3e-066b-49c3-9bd4-421a03921b96"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PunchHeld"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -363,6 +394,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
         m_EditableControls_LookMovement = m_EditableControls.FindAction("LookMovement", throwIfNotFound: true);
         m_EditableControls_Jump = m_EditableControls.FindAction("Jump", throwIfNotFound: true);
         m_EditableControls_Punch = m_EditableControls.FindAction("Punch", throwIfNotFound: true);
+        m_EditableControls_PunchHeld = m_EditableControls.FindAction("PunchHeld", throwIfNotFound: true);
         m_EditableControls_Charge = m_EditableControls.FindAction("Charge", throwIfNotFound: true);
         m_EditableControls_Crouch = m_EditableControls.FindAction("Crouch", throwIfNotFound: true);
         m_EditableControls_Pause = m_EditableControls.FindAction("Pause", throwIfNotFound: true);
@@ -431,6 +463,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
     private readonly InputAction m_EditableControls_LookMovement;
     private readonly InputAction m_EditableControls_Jump;
     private readonly InputAction m_EditableControls_Punch;
+    private readonly InputAction m_EditableControls_PunchHeld;
     private readonly InputAction m_EditableControls_Charge;
     private readonly InputAction m_EditableControls_Crouch;
     private readonly InputAction m_EditableControls_Pause;
@@ -444,6 +477,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
         public InputAction @LookMovement => m_Wrapper.m_EditableControls_LookMovement;
         public InputAction @Jump => m_Wrapper.m_EditableControls_Jump;
         public InputAction @Punch => m_Wrapper.m_EditableControls_Punch;
+        public InputAction @PunchHeld => m_Wrapper.m_EditableControls_PunchHeld;
         public InputAction @Charge => m_Wrapper.m_EditableControls_Charge;
         public InputAction @Crouch => m_Wrapper.m_EditableControls_Crouch;
         public InputAction @Pause => m_Wrapper.m_EditableControls_Pause;
@@ -470,6 +504,9 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
                 @Punch.started -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnPunch;
                 @Punch.performed -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnPunch;
                 @Punch.canceled -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnPunch;
+                @PunchHeld.started -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnPunchHeld;
+                @PunchHeld.performed -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnPunchHeld;
+                @PunchHeld.canceled -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnPunchHeld;
                 @Charge.started -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnCharge;
                 @Charge.performed -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnCharge;
                 @Charge.canceled -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnCharge;
@@ -501,6 +538,9 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
                 @Punch.started += instance.OnPunch;
                 @Punch.performed += instance.OnPunch;
                 @Punch.canceled += instance.OnPunch;
+                @PunchHeld.started += instance.OnPunchHeld;
+                @PunchHeld.performed += instance.OnPunchHeld;
+                @PunchHeld.canceled += instance.OnPunchHeld;
                 @Charge.started += instance.OnCharge;
                 @Charge.performed += instance.OnCharge;
                 @Charge.canceled += instance.OnCharge;
@@ -526,6 +566,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
         void OnLookMovement(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnPunch(InputAction.CallbackContext context);
+        void OnPunchHeld(InputAction.CallbackContext context);
         void OnCharge(InputAction.CallbackContext context);
         void OnCrouch(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);

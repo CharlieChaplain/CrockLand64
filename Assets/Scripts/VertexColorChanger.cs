@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -12,9 +13,32 @@ public class VertexColorChanger : MonoBehaviour
 
     private List<Color> colors;
 
+    private bool buttonHeld = false;
+
+    _Controls controls;
+
     void Awake()
     {
         m_TextComponent = GetComponent<TMP_Text>();
+    }
+    private void OnEnable()
+    {
+        StartCoroutine(EnableControls());
+    }
+    IEnumerator EnableControls()
+    {
+        yield return new WaitForEndOfFrame();
+
+        controls = InputManager.Instance.controls;
+
+        // Input subscriptions----------------------------------------------
+        controls.EditableControls.PunchHeld.performed += OnPunchHold;
+        controls.EditableControls.PunchHeld.canceled += OnPunchHold;
+    }
+
+    void OnPunchHold(InputAction.CallbackContext obj)
+    {
+        buttonHeld = obj.performed;
     }
 
     public void StartColorChanger(float textSpeed, List<Color> sentenceColors)
@@ -83,31 +107,27 @@ public class VertexColorChanger : MonoBehaviour
 
             currentCharacter++;
 
-            //will scroll text immediately if jump is held down
-            if (Input.GetButton("Jump"))
+            //will scroll text immediately if punch is held down
+            if(buttonHeld)
             {
-                skipTimer += Time.deltaTime;
-                if(skipTimer > 0.8f)
+                for(int i = 0; i < characterCount; i++)
                 {
-                    for(int i = 0; i < characterCount; i++)
+                    //repeats code from above but with no pause inbetween
+                    int matIndex = textInfo.characterInfo[i].materialReferenceIndex;
+                    newVertexColors = textInfo.meshInfo[matIndex].colors32;
+                    int vertIndex = textInfo.characterInfo[i].vertexIndex;
+                    if (textInfo.characterInfo[i].isVisible)
                     {
-                        //repeats code from above but with no pause inbetween
-                        int matIndex = textInfo.characterInfo[i].materialReferenceIndex;
-                        newVertexColors = textInfo.meshInfo[matIndex].colors32;
-                        int vertIndex = textInfo.characterInfo[i].vertexIndex;
-                        if (textInfo.characterInfo[i].isVisible)
-                        {
-                            Color color = colors[i];
+                        Color color = colors[i];
 
-                            newVertexColors[vertIndex + 0] = color;
-                            newVertexColors[vertIndex + 1] = color;
-                            newVertexColors[vertIndex + 2] = color;
-                            newVertexColors[vertIndex + 3] = color;
-                            m_TextComponent.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
-                        }
+                        newVertexColors[vertIndex + 0] = color;
+                        newVertexColors[vertIndex + 1] = color;
+                        newVertexColors[vertIndex + 2] = color;
+                        newVertexColors[vertIndex + 3] = color;
+                        m_TextComponent.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
                     }
-                    currentCharacter = characterCount; //final increment to break the while loop
                 }
+                currentCharacter = characterCount; //final increment to break the while loop
             }
             else
             {

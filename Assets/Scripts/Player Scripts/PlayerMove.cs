@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class PlayerMove : MonoBehaviour
     public LayerMask groundMask;
     public Animator anim;
     public Transform model;
+
+    _Controls controls;
 
     private RuntimeAnimatorController animController;
 
@@ -54,6 +57,9 @@ public class PlayerMove : MonoBehaviour
     public bool crouchPressed = false;
     private bool floorAbove;
 
+    private NPC currentNPC;
+    private bool NPCInteract = false;
+
     public Transform waist;
     private float angleToLean;
 
@@ -92,6 +98,32 @@ public class PlayerMove : MonoBehaviour
     Form_Ghost ghost;
 
     const float ROOT2 = 1.414f;
+    private void Awake()
+    {
+        //controls = InputManager.Instance.controls;
+    }
+    private void OnEnable()
+    {
+        StartCoroutine(EnableControls());
+    }
+    IEnumerator EnableControls()
+    {
+        yield return new WaitForEndOfFrame();
+
+        controls = InputManager.Instance.controls;
+
+        // player subscriptions--------------------------------------------------
+        controls.EditableControls.Movement.performed += OnMoveListener;
+        controls.EditableControls.Movement.canceled += OnMoveListener;
+
+        controls.EditableControls.Jump.started += OnJumpListener;
+        controls.EditableControls.Jump.canceled += OnJumpListener;
+
+        controls.EditableControls.Crouch.performed += OnCrouchListener;
+        controls.EditableControls.Crouch.canceled += OnCrouchListener;
+
+        controls.EditableControls.Punch.started += OnPunchListener;
+    }
 
     private void Start()
     {
@@ -121,6 +153,7 @@ public class PlayerMove : MonoBehaviour
         CheckGrounded();
         CheckSliding();
         CheckSwimming();
+        CheckNPC();
         
         switch (PlayerManager.Instance.currentState)
         {
@@ -180,9 +213,19 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    public void OnMoveListener(float x, float y)
+    public void OnMoveListener(InputAction.CallbackContext obj)
     {
-        input = new Vector2(x,y);
+        input = obj.ReadValue<Vector2>();
+    }
+
+    public void OnPunchListener(InputAction.CallbackContext obj)
+    {
+        if (NPCInteract)
+        {
+            currentNPC.Engage();
+
+            StartCoroutine(ButtonAlertDisappear());
+        }
     }
 
     /// <summary>
@@ -246,6 +289,61 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    private void CheckNPC()
+    {
+        bool check = false;
+        NPC npc = null;
+        LayerMask npcMask = LayerMask.GetMask("NPC");
+        Collider[] checkedColliders = Physics.OverlapSphere(transform.position + Vector3.up * controller.height * 0.5f, controller.radius, npcMask);
+
+        //gets the first npc collider returned
+        if(checkedColliders.Length > 0 &&
+        PlayerManager.Instance.canMove &&
+        checkedColliders[0].transform.root.gameObject.GetComponent<NPC>().canEngage &&
+        PlayerManager.Instance.currentState == PlayerManager.PlayerState.normal)
+        {
+            buttonAlert.SetActive(true);
+            buttonAlert.GetComponent<Animator>().SetBool("Active", true);
+
+            NPCInteract = true;
+            currentNPC = checkedColliders[0].transform.root.gameObject.GetComponent<NPC>();
+        }
+        else
+        {
+            if (NPCInteract)
+                StartCoroutine(ButtonAlertDisappear());
+            NPCInteract = false;
+        }
+        /*
+        //will see if any of the returned colliders are an npc
+        foreach (Collider col in checkedColliders)
+        {
+            if (col.CompareTag("NPC") &&
+                PlayerManager.Instance.canMove &&
+                col.transform.root.gameObject.GetComponent<NPC>().canEngage &&
+                PlayerManager.Instance.currentState == PlayerManager.PlayerState.normal)
+            {
+                check = true;
+                npc = col.transform.root.gameObject.GetComponent<NPC>();
+            }
+        }
+
+        if (check)
+        {
+            buttonAlert.SetActive(true);
+            buttonAlert.GetComponent<Animator>().SetBool("Active", true);
+
+            NPCInteract = true;
+            currentNPC = npc;
+        } else
+        {
+            if(NPCInteract)
+                StartCoroutine(ButtonAlertDisappear());
+            NPCInteract = false;
+        }
+        */
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.transform.gameObject.layer == 10) //10 = enemy
@@ -266,31 +364,30 @@ public class PlayerMove : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
+        /*
         if (other.gameObject.CompareTag("NPC") && PlayerManager.Instance.canMove &&
             other.gameObject.GetComponent<NPC>().canEngage && PlayerManager.Instance.currentState == PlayerManager.PlayerState.normal)
         {
             buttonAlert.SetActive(true);
             buttonAlert.GetComponent<Animator>().SetBool("Active", true);
 
-            /*
-            if (Input.GetButtonDown("Punch"))
-            {
-                other.GetComponent<NPC>().Engage();
-
-                StartCoroutine(ButtonAlertDisappear());
-            }
-            */
+            NPCInteract = true;
+            currentNPC = other.gameObject.GetComponent<NPC>();
         }
         else
         {
-            buttonAlert.SetActive(false);
+            if(NPCInteract)
+                StartCoroutine(ButtonAlertDisappear());
+            NPCInteract = false;
         }
+        */
     }
     private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.CompareTag("NPC"))
         {
-            StartCoroutine(ButtonAlertDisappear());
+            //Debug.Log("wow");
+            //StartCoroutine(ButtonAlertDisappear());
         }
     }
     private void OnDrawGizmosSelected()
@@ -529,9 +626,9 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    public void CrouchListener(bool pressed)
+    public void OnCrouchListener(InputAction.CallbackContext obj)
     {
-        crouchPressed = pressed;
+        crouchPressed = obj.performed;
     }
 
     void CheckCrouch()
@@ -794,12 +891,20 @@ public class PlayerMove : MonoBehaviour
         SlopeCorrection();
     }
 
-    public void Jump(bool started)
+    public void OnJumpListener(InputAction.CallbackContext obj)
     {
-        //jump is called when jump button is pressed and released, so this prevents the function from running twice.
-        if (!started)
-            return;
-
+        if (obj.started)
+        {
+            Jump();
+            JumpAlterGrav(true);
+        }
+        else if (obj.canceled)
+        {
+            JumpAlterGrav(false);
+        }
+    }
+    public void Jump()
+    {
         if (PlayerManager.Instance.currentForm == PlayerManager.PlayerForm.ghost ||
             !PlayerManager.Instance.canMove)
             return;
@@ -923,6 +1028,10 @@ public class PlayerMove : MonoBehaviour
     public bool GetHiJumping()
     {
         return hiJumping;
+    }
+    public bool GetNPCInteract()
+    {
+        return NPCInteract;
     }
     public void SetSpeed(float _speed)
     {

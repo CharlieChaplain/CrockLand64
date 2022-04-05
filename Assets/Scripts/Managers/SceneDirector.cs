@@ -41,6 +41,8 @@ public class SceneDirector : MonoBehaviour
         IrisWipe.Instance.OnSceneLoad();
         SoundManager.Instance.OnSceneLoad();
         TreasureMaster.Instance.OnSceneLoad();
+        InputManager.Instance.OnSceneLoad();
+        DialogueManager.Instance.OnSceneLoad();
     }
 
     public static void LoadScene(string sceneName)

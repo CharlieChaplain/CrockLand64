@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Pause : MonoBehaviour
 {
     public static bool activatePause = true;
+    _Controls controls;
 
     protected bool canPause = true;
     protected bool pressed = false;
@@ -24,6 +26,28 @@ public class Pause : MonoBehaviour
     public PlaySound menuOpenSound;
     public PlaySound menuCloseSound;
 
+    private void Awake()
+    {
+        controls = InputManager.Instance.controls;
+    }
+
+    private void OnEnable()
+    {
+        StartCoroutine(EnableControls());
+    }
+    IEnumerator EnableControls()
+    {
+        yield return new WaitForEndOfFrame();
+
+        controls = InputManager.Instance.controls;
+
+        // UI subscriptions------------------------------------------------------
+        controls.EditableControls.Movement.performed += PauseCursorMovement;
+        controls.EditableControls.Movement.canceled += PauseCursorMovement;
+        controls.EditableControls.Pause.started += PauseListener;
+        controls.EditableControls.Submit.started += PauseConfirm;
+        controls.EditableControls.Cancel.started += PauseCancel;
+    }
     // Start is called before the first frame update
     protected virtual void Start()
     {
@@ -47,7 +71,7 @@ public class Pause : MonoBehaviour
         fadeAnim.SetBool("Paused", paused);
     }
 
-    public void PauseListener()
+    public void PauseListener(InputAction.CallbackContext obj)
     {
         if (!canPause)
             return;
@@ -58,9 +82,9 @@ public class Pause : MonoBehaviour
     }
 
     //these three pass down the unity event that gets called during input to the current menu so it can perform it's logic.
-    public void PauseCursorMovement(float x, float y)
+    public void PauseCursorMovement(InputAction.CallbackContext obj)
     {
-        Vector2 input = new Vector2(x, y);
+        Vector2 input = obj.ReadValue<Vector2>();
         if (input == Vector2.zero)
             pressed = false;
         if (!paused || pressed)
@@ -69,11 +93,11 @@ public class Pause : MonoBehaviour
             pressed = true;
         currentMenu.CursorMovement(input);
     }
-    public void PauseConfirm()
+    public void PauseConfirm(InputAction.CallbackContext obj)
     {
         currentMenu.Confirm();
     }
-    public void PauseCancel()
+    public void PauseCancel(InputAction.CallbackContext obj)
     {
         currentMenu.Cancel();
     }

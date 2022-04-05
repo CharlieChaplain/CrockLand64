@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class LadderClimb : MonoBehaviour
 {
@@ -8,13 +9,35 @@ public class LadderClimb : MonoBehaviour
     public float climbSpeed;
     public float climbAccel;
 
+    _Controls controls;
+
     float regrabTimer = 0; //a timer that counts down after leaving a ladder to prevent immediate regrabbing
     CharacterController controller;
     Animator anim;
 
     Vector3 velocity;
+    Vector2 input;
 
     GameObject currentLadder;
+
+    private void Awake()
+    {
+        controls = InputManager.Instance.controls;
+    }
+    private void OnEnable()
+    {
+        StartCoroutine(EnableControls());
+    }
+    IEnumerator EnableControls()
+    {
+        yield return new WaitForEndOfFrame();
+
+        controls = InputManager.Instance.controls;
+
+        // player subscriptions--------------------------------------------------
+        controls.EditableControls.Movement.performed += OnMoveListener;
+        controls.EditableControls.Movement.canceled += OnMoveListener;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -28,6 +51,10 @@ public class LadderClimb : MonoBehaviour
     {
         if (regrabTimer > 0)
             regrabTimer -= Time.deltaTime;
+    }
+    public void OnMoveListener(InputAction.CallbackContext obj)
+    {
+        input = obj.ReadValue<Vector2>();
     }
 
     public void LadderMove()
@@ -44,8 +71,8 @@ public class LadderClimb : MonoBehaviour
         }
         transform.forward = newForward;
 
-        if (Input.GetAxis("Vertical") != 0)
-            velocity += transform.up * Input.GetAxis("Vertical") * climbAccel;
+        if (input.y != 0)
+            velocity += transform.up * input.y * climbAccel;
         else if (velocity.magnitude > 0.2f)
             velocity /= climbAccel;
         else

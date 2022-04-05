@@ -1,14 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Swim : MonoBehaviour
 {
     Transform cam; //camera
     public Transform model; //crock model, the thing that gets rotated
+    _Controls controls;
 
     PlayerMove playerMove;
 
+    Vector2 input;
     Vector3 targetVelocity;
     Vector3 velocity;
 
@@ -32,8 +35,7 @@ public class Swim : MonoBehaviour
     Vector3 timeToTurnRef;
     float strokeTimer;
     public float strokeSpeed;
-    bool stroked = false;
-    bool paddled = false;
+    bool diveTimerUp = true;
 
     public float paddleSpeed;
 
@@ -63,6 +65,28 @@ public class Swim : MonoBehaviour
         diving
     }
     private WaterStates currentWaterState = WaterStates.paddling;
+    private void Awake()
+    {
+        controls = InputManager.Instance.controls;
+    }
+    private void OnEnable()
+    {
+        StartCoroutine(EnableControls());
+    }
+    IEnumerator EnableControls()
+    {
+        yield return new WaitForEndOfFrame();
+
+        controls = InputManager.Instance.controls;
+
+        // player subscriptions--------------------------------------------------
+        controls.EditableControls.Movement.performed += OnMoveListener;
+        controls.EditableControls.Movement.canceled += OnMoveListener;
+
+        controls.EditableControls.Punch.started += OnPunchListener;
+        controls.EditableControls.Jump.started += OnJumpListener;
+        controls.EditableControls.Jump.canceled += OnJumpCancel;
+    }
 
     void Start()
     {
@@ -78,7 +102,71 @@ public class Swim : MonoBehaviour
         CheckUnderwater();
     }
 
-    public void UpdateChecks(bool _topCheck, bool _bottomCheck)
+    public void OnMoveListener(InputAction.CallbackContext obj)
+    {
+        if (PlayerManager.Instance.currentState != PlayerManager.PlayerState.swimming)
+            return;
+        input = obj.ReadValue<Vector2>();
+    }
+
+    public void OnPunchListener(InputAction.CallbackContext obj)
+    {
+        if (PlayerManager.Instance.currentState != PlayerManager.PlayerState.swimming)
+            return;
+        switch (currentWaterState)
+        {
+            case WaterStates.paddling:
+                currentWaterState = WaterStates.diving;
+                Dive();
+                break;
+            case WaterStates.diving:
+                //set targetvelocity to paddle speed
+                targetVelocity = model.forward * paddleSpeed;
+                break;
+            default:
+                break;
+        }
+    }
+    public void OnJumpListener(InputAction.CallbackContext obj)
+    {
+        if (PlayerManager.Instance.currentState != PlayerManager.PlayerState.swimming)
+            return;
+        switch (currentWaterState)
+        {
+            case WaterStates.paddling:
+                break;
+            case WaterStates.diving:
+                if(strokeTimer <= 0)
+                {
+                    //set regular velocity to stroke speed
+                    velocity = model.forward * strokeSpeed;
+
+                    anim.SetTrigger("Stroke");
+                    underwaterSwoosh.Play(transform.position);
+
+                    strokeTimer = 1f;
+
+                    partBubblesBurst.Stop();
+                    partBubblesBurst.Play();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void OnJumpCancel(InputAction.CallbackContext obj)
+    {
+        if (PlayerManager.Instance.currentState != PlayerManager.PlayerState.swimming)
+            return;
+        if (currentWaterState == WaterStates.diving)
+        {
+            //set targetveloctiy to zero when not paddling
+            targetVelocity = Vector3.zero;
+        }
+    }
+
+        public void UpdateChecks(bool _topCheck, bool _bottomCheck)
     {
         topCheck = _topCheck;
         bottomCheck = _bottomCheck;
@@ -157,10 +245,8 @@ public class Swim : MonoBehaviour
 
     void SwimRotate()
     {
-        float horz = Input.GetAxis("Horizontal");
-        float vert = Input.GetAxis("Vertical");
         //--------------INVERT VERT FOR INVERTED Y CONTROLS--------------
-        Vector3 direction = new Vector3(vert, horz, 0);
+        Vector3 direction = new Vector3(input.y, input.x, 0);
         if (direction.magnitude > 1)
             direction.Normalize();
 
@@ -177,47 +263,13 @@ public class Swim : MonoBehaviour
 
     void SwimMove()
     {
-        float paddle = Input.GetAxis("Punch");
-        float stroke = Input.GetAxis("Jump");
-
-        if (stroke > 0 && strokeTimer <= 0 && !stroked)
-        {
-            //set regular velocity to stroke speed
-            velocity = model.forward * strokeSpeed;
-
-            anim.SetTrigger("Stroke");
-            underwaterSwoosh.Play(transform.position);
-
-            stroked = true;
-            strokeTimer = 1f;
-
-            partBubblesBurst.Stop();
-            partBubblesBurst.Play();
-        }
-        else if (paddle > 0)
-        {
-            //set targetvelocity to paddle speed
-            targetVelocity = model.forward * paddleSpeed;
-            paddled = true;
-        }
-        else
-        {
-            //set targetveloctiy to zero
-            targetVelocity = Vector3.zero;
-        }
-
-        if (stroke == 0)
-        {
-            stroked = false;
-        }
-
         //this line makes crock always swim in his forward direction while diving. Gives more control over direction.
         velocity = model.forward * velocity.magnitude;
 
         if (strokeTimer > 0)
             strokeTimer -= Time.deltaTime;
 
-        if (!topCheck)
+        if (!topCheck && diveTimerUp)
         {
             currentWaterState = WaterStates.paddling;
             Surface();
@@ -225,9 +277,7 @@ public class Swim : MonoBehaviour
     }
     void Paddle(Transform cam)
     {
-        float horz = Input.GetAxis("Horizontal");
-        float vert = Input.GetAxis("Vertical");
-        Vector3 direction = new Vector3(horz, 0f, vert);
+        Vector3 direction = new Vector3(input.x, 0f, input.y);
         if (direction.magnitude > 1)
             direction.Normalize();
 
@@ -245,10 +295,6 @@ public class Swim : MonoBehaviour
         if (underwater && PlayerManager.Instance.canMove)
             velocity.y += .2f;
 
-        if (Input.GetAxis("Punch") == 0)
-        {
-            paddled = false;
-        }
 
         if (velocity == Vector3.zero)
         {
@@ -269,12 +315,6 @@ public class Swim : MonoBehaviour
         //matches root transform's y component to model transform so it matches when crock enters/leaves water
         transform.rotation = Quaternion.Euler(0, model.rotation.eulerAngles.y, 0);
 
-        //enter dive state
-        if (Input.GetAxis("Punch") > 0 && !paddled)
-        {
-            currentWaterState = WaterStates.diving;
-            Dive();
-        }
     }
 
     void CheckUnderwater()
@@ -386,6 +426,8 @@ public class Swim : MonoBehaviour
 
     void Dive()
     {
+        StartCoroutine(DiveTimer());
+
         anim.SetTrigger("Stroke");
         underwaterSwoosh.Play(transform.position);
 
@@ -404,6 +446,13 @@ public class Swim : MonoBehaviour
             prevMusicIndex = currentIndex;
             SoundManager.Instance.music.ChangeMusic(1);
         }
+    }
+
+    IEnumerator DiveTimer()
+    {
+        diveTimerUp = false;
+        yield return new WaitForSeconds(1f);
+        diveTimerUp = true;
     }
 
     void Surface()

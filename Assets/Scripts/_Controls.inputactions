@@ -42,6 +42,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "PunchHeld",
+                    "type": "Button",
+                    "id": "5172f321-af58-4218-aa68-66804822aef4",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Hold(duration=0.8)",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Charge",
                     "type": "Button",
                     "id": "94ff0bcd-9d13-4301-bd4e-ea64c24b29bc",
@@ -327,6 +336,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0b3f88b1-40c8-4243-8d48-4a364f33ea93",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PunchHeld",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "407dcd3e-066b-49c3-9bd4-421a03921b96",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PunchHeld",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

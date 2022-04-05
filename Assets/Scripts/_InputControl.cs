@@ -47,27 +47,6 @@ public class _InputControl : MonoBehaviour
     private void OnEnable()
     {
         controls.EditableControls.Enable();
-
-        // player subscriptions--------------------------------------------------
-        controls.EditableControls.Movement.performed += OnMove;
-        controls.EditableControls.Movement.canceled += OnMove;
-
-        controls.EditableControls.Jump.started += OnJump;
-        controls.EditableControls.Jump.canceled += OnJump;
-
-        controls.EditableControls.Punch.started += OnPunch;
-        controls.EditableControls.Punch.performed += OnPunchHeld;
-        controls.EditableControls.Punch.canceled += OnPunchHeld;
-
-        controls.EditableControls.Crouch.performed += OnCrouch;
-        controls.EditableControls.Crouch.canceled += OnCrouch;
-
-        controls.EditableControls.Charge.started += OnCharge;
-
-        // UI subscriptions------------------------------------------------------
-        controls.EditableControls.Pause.started += OnPause;
-        controls.EditableControls.Submit.started += OnConfirm;
-        controls.EditableControls.Cancel.started += OnCancel;
     }
 
     private void OnDisable()

@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Attack : MonoBehaviour
 {
     public bool canAttack = true;
     public bool attackDone = true;
-    bool buttonHeld = false;
+    _Controls controls;
 
     PlayerMove playerMove;
     Animator anim;
@@ -43,6 +44,27 @@ public class Attack : MonoBehaviour
      
     */
 
+    private void Awake()
+    {
+        controls = InputManager.Instance.controls;
+    }
+
+    private void OnEnable()
+    {
+        StartCoroutine(EnableControls());
+    }
+    IEnumerator EnableControls()
+    {
+        yield return new WaitForEndOfFrame();
+
+        controls = InputManager.Instance.controls;
+
+        // player subscriptions--------------------------------------------------
+        controls.EditableControls.Punch.started += AttackLogic;
+        controls.EditableControls.Punch.canceled += AttackLogic;
+        controls.EditableControls.Crouch.performed += AttackLogicGroundPound;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -60,19 +82,25 @@ public class Attack : MonoBehaviour
         anim.SetBool("Carrying", carrying);
     }
 
-    public void ButtonHeldListener(bool listener)
-    {
-        if (throwing && !listener)
-        {
-            Throw();
-        }
-
-        throwing = listener && carryTarget != null;
-    }
-
-    public void AttackLogic(bool listener)
+    public void AttackLogic(InputAction.CallbackContext obj)
     {
         if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.transformed)
+            return;
+        if (playerMove.GetNPCInteract())
+            return;
+
+        if(carrying || throwing)
+        {
+            if (obj.started)
+            {
+                throwing = true;
+            }else if (obj.canceled)
+            {
+                Throw();
+            }
+            return;
+        }
+        if (obj.canceled)
             return;
 
         canAttack = PlayerManager.Instance.canMove &&
@@ -111,11 +139,8 @@ public class Attack : MonoBehaviour
             GetComponent<Idle>().StopIdle();
     }
 
-    public void AttackLogicGroundPound(bool listener)
+    public void AttackLogicGroundPound(InputAction.CallbackContext obj)
     {
-        if (!listener)
-            return;
-
         canAttack = PlayerManager.Instance.canMove &&
             PlayerManager.Instance.currentState == PlayerManager.PlayerState.normal &&
             attackDone;
@@ -166,12 +191,16 @@ public class Attack : MonoBehaviour
 
     void ThrowBuildup()
     {
-        if (!carrying)
-            return;
-        if (throwing)
+        //will drop the enemy if crock crouches
+        if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.crouching)
         {
-            throwFrameCounter++;
+            DropEnemy();
         }
+
+        if (!throwing)
+            return;
+
+        throwFrameCounter++;
 
         if (throwFrameCounter > 10)
         {
@@ -185,12 +214,6 @@ public class Attack : MonoBehaviour
             throwVectorMultiplier += Time.deltaTime;
             if (throwVectorMultiplier > 3f)
                 throwVectorMultiplier = 3f;
-        }
-
-        //will drop the enemy if crock crouches
-        if (PlayerManager.Instance.currentState == PlayerManager.PlayerState.crouching)
-        {
-            DropEnemy();
         }
     }
     void Throw()

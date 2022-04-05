@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Charge : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class Charge : MonoBehaviour
     private Animator anim;
     private PlayerMove playerMove;
     private float oldMaxSpeed;
+    _Controls controls;
 
     private float chargeTimer = 0f;
 
@@ -31,6 +33,25 @@ public class Charge : MonoBehaviour
     public GameObject chargeEffect;
     public ParticleSystem chargeShockwave;
     public PlaySound reboundSound;
+
+    private void Awake()
+    {
+        controls = InputManager.Instance.controls;
+    }
+
+    private void OnEnable()
+    {
+        StartCoroutine(EnableControls());
+    }
+    IEnumerator EnableControls()
+    {
+        yield return new WaitForEndOfFrame();
+
+        controls = InputManager.Instance.controls;
+
+        // player subscriptions--------------------------------------------------
+        controls.EditableControls.Charge.started += StartCharge;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -120,7 +141,7 @@ public class Charge : MonoBehaviour
         return velocity;
     }
 
-    public void StartCharge(bool listener)
+    public void StartCharge(InputAction.CallbackContext obj)
     {
         if (!playerMove.GetGrounded() || charging || !PlayerManager.Instance.canMove ||
             PlayerManager.Instance.currentState != PlayerManager.PlayerState.normal)

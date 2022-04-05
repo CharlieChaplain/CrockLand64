@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class DialogueManager : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class DialogueManager : MonoBehaviour
     private Queue<string> sentences;
     bool displayFinished; //determines if the display is finished writing all the letters.
     bool talking;
+    _Controls controls;
 
     //UI variables
     GameObject dialogueBox;
@@ -36,6 +38,19 @@ public class DialogueManager : MonoBehaviour
     //changes per dialogue
     Dialogue currentDialogue;
 
+    public void OnSceneLoad()
+    {
+        StartCoroutine(EnableControls());
+    }
+    IEnumerator EnableControls()
+    {
+        yield return new WaitForEndOfFrame();
+
+        controls = InputManager.Instance.controls;
+
+        // Input subscriptions--------------------------------------------------
+        controls.EditableControls.Punch.started += PunchListener;
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -56,13 +71,14 @@ public class DialogueManager : MonoBehaviour
 
     private void Update()
     {
-        if (talking)
+    }
+
+    void PunchListener(InputAction.CallbackContext obj)
+    {
+        if(talking && displayFinished)
         {
-            if (Input.GetButtonDown("Punch") && displayFinished)
-            {
-                NextSentence();
-                displayFinished = false;
-            }
+            NextSentence();
+            displayFinished = false;
         }
     }
 
