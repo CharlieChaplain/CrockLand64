@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OptionsMenu : Menu
+public class ControlsRootMenu : Menu
 {
-    public Animator optionsMenuAnim;
+    public Animator menuAnim;
 
     // Start is called before the first frame update
     protected override void Start()
@@ -26,12 +26,12 @@ public class OptionsMenu : Menu
     public override void Enter()
     {
         base.Enter();
-        optionsMenuAnim.SetBool("Show", true);
+        menuAnim.SetBool("Show", true);
     }
     public override void Leave()
     {
         base.Leave();
-        optionsMenuAnim.SetBool("Show", false);
+        menuAnim.SetBool("Show", false);
     }
 
     public override void Confirm()
@@ -40,16 +40,14 @@ public class OptionsMenu : Menu
             return;
         switch (cursor.currentOption)
         {
-            case 0: //Display
+            case 0: //Keyboard
+                pause.ChangeMenu(5);
                 break;
-            case 1: //Audio
-                pause.ChangeMenu(3);
+            case 1: //Controller
+                pause.ChangeMenu(6);
                 break;
-            case 2: //Controls
-                pause.ChangeMenu(4);
-                break;
-            case 3: //Back
-                pause.ChangeMenu(0);
+            case 3: //Back to Options
+                pause.ChangeMenu(1);
                 break;
             default:
                 break;
@@ -59,6 +57,6 @@ public class OptionsMenu : Menu
     {
         if (!active)
             return;
-        pause.ChangeMenu(0);
+        pause.ChangeMenu(1);
     }
 }
