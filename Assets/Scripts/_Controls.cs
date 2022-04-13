@@ -28,7 +28,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
             ""id"": ""435cbb5e-7964-4aeb-875e-87ce2875d3e2"",
             ""actions"": [
                 {
-                    ""name"": ""Movement"",
+                    ""name"": ""Move"",
                     ""type"": ""Value"",
                     ""id"": ""7f5f62b4-3577-4554-9e2e-c5f69ca3b40f"",
                     ""expectedControlType"": ""Vector2"",
@@ -41,7 +41,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
                     ""type"": ""PassThrough"",
                     ""id"": ""576f505c-b064-4809-9202-6b50a5262dc5"",
                     ""expectedControlType"": ""Vector2"",
-                    ""processors"": ""InvertVector2(invertX=false)"",
+                    ""processors"": ""InvertVector2(invertX=false),StickDeadzone"",
                     ""interactions"": """",
                     ""initialStateCheck"": true
                 },
@@ -100,7 +100,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Submit"",
+                    ""name"": ""Confirm"",
                     ""type"": ""Button"",
                     ""id"": ""74233f3a-edd3-4ec2-94fe-618dd4dee4a8"",
                     ""expectedControlType"": ""Button"",
@@ -126,7 +126,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Movement"",
+                    ""action"": ""Move"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
@@ -137,7 +137,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Movement"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -148,7 +148,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Movement"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -159,7 +159,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Movement"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -170,7 +170,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Movement"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -181,7 +181,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": ""StickDeadzone"",
                     ""groups"": """",
-                    ""action"": ""Movement"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -324,7 +324,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Submit"",
+                    ""action"": ""Confirm"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -335,7 +335,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Submit"",
+                    ""action"": ""Confirm"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -390,7 +390,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
 }");
         // EditableControls
         m_EditableControls = asset.FindActionMap("EditableControls", throwIfNotFound: true);
-        m_EditableControls_Movement = m_EditableControls.FindAction("Movement", throwIfNotFound: true);
+        m_EditableControls_Move = m_EditableControls.FindAction("Move", throwIfNotFound: true);
         m_EditableControls_LookMovement = m_EditableControls.FindAction("LookMovement", throwIfNotFound: true);
         m_EditableControls_Jump = m_EditableControls.FindAction("Jump", throwIfNotFound: true);
         m_EditableControls_Punch = m_EditableControls.FindAction("Punch", throwIfNotFound: true);
@@ -398,7 +398,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
         m_EditableControls_Charge = m_EditableControls.FindAction("Charge", throwIfNotFound: true);
         m_EditableControls_Crouch = m_EditableControls.FindAction("Crouch", throwIfNotFound: true);
         m_EditableControls_Pause = m_EditableControls.FindAction("Pause", throwIfNotFound: true);
-        m_EditableControls_Submit = m_EditableControls.FindAction("Submit", throwIfNotFound: true);
+        m_EditableControls_Confirm = m_EditableControls.FindAction("Confirm", throwIfNotFound: true);
         m_EditableControls_Cancel = m_EditableControls.FindAction("Cancel", throwIfNotFound: true);
     }
 
@@ -459,7 +459,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
     // EditableControls
     private readonly InputActionMap m_EditableControls;
     private IEditableControlsActions m_EditableControlsActionsCallbackInterface;
-    private readonly InputAction m_EditableControls_Movement;
+    private readonly InputAction m_EditableControls_Move;
     private readonly InputAction m_EditableControls_LookMovement;
     private readonly InputAction m_EditableControls_Jump;
     private readonly InputAction m_EditableControls_Punch;
@@ -467,13 +467,13 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
     private readonly InputAction m_EditableControls_Charge;
     private readonly InputAction m_EditableControls_Crouch;
     private readonly InputAction m_EditableControls_Pause;
-    private readonly InputAction m_EditableControls_Submit;
+    private readonly InputAction m_EditableControls_Confirm;
     private readonly InputAction m_EditableControls_Cancel;
     public struct EditableControlsActions
     {
         private @_Controls m_Wrapper;
         public EditableControlsActions(@_Controls wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Movement => m_Wrapper.m_EditableControls_Movement;
+        public InputAction @Move => m_Wrapper.m_EditableControls_Move;
         public InputAction @LookMovement => m_Wrapper.m_EditableControls_LookMovement;
         public InputAction @Jump => m_Wrapper.m_EditableControls_Jump;
         public InputAction @Punch => m_Wrapper.m_EditableControls_Punch;
@@ -481,7 +481,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
         public InputAction @Charge => m_Wrapper.m_EditableControls_Charge;
         public InputAction @Crouch => m_Wrapper.m_EditableControls_Crouch;
         public InputAction @Pause => m_Wrapper.m_EditableControls_Pause;
-        public InputAction @Submit => m_Wrapper.m_EditableControls_Submit;
+        public InputAction @Confirm => m_Wrapper.m_EditableControls_Confirm;
         public InputAction @Cancel => m_Wrapper.m_EditableControls_Cancel;
         public InputActionMap Get() { return m_Wrapper.m_EditableControls; }
         public void Enable() { Get().Enable(); }
@@ -492,9 +492,9 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
         {
             if (m_Wrapper.m_EditableControlsActionsCallbackInterface != null)
             {
-                @Movement.started -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnMovement;
-                @Movement.performed -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnMovement;
-                @Movement.canceled -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnMovement;
+                @Move.started -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnMove;
+                @Move.performed -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnMove;
+                @Move.canceled -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnMove;
                 @LookMovement.started -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnLookMovement;
                 @LookMovement.performed -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnLookMovement;
                 @LookMovement.canceled -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnLookMovement;
@@ -516,9 +516,9 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
                 @Pause.started -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnPause;
                 @Pause.performed -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnPause;
                 @Pause.canceled -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnPause;
-                @Submit.started -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnSubmit;
-                @Submit.performed -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnSubmit;
-                @Submit.canceled -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnSubmit;
+                @Confirm.started -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnConfirm;
+                @Confirm.performed -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnConfirm;
+                @Confirm.canceled -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnConfirm;
                 @Cancel.started -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnCancel;
                 @Cancel.performed -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnCancel;
                 @Cancel.canceled -= m_Wrapper.m_EditableControlsActionsCallbackInterface.OnCancel;
@@ -526,9 +526,9 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
             m_Wrapper.m_EditableControlsActionsCallbackInterface = instance;
             if (instance != null)
             {
-                @Movement.started += instance.OnMovement;
-                @Movement.performed += instance.OnMovement;
-                @Movement.canceled += instance.OnMovement;
+                @Move.started += instance.OnMove;
+                @Move.performed += instance.OnMove;
+                @Move.canceled += instance.OnMove;
                 @LookMovement.started += instance.OnLookMovement;
                 @LookMovement.performed += instance.OnLookMovement;
                 @LookMovement.canceled += instance.OnLookMovement;
@@ -550,9 +550,9 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
                 @Pause.started += instance.OnPause;
                 @Pause.performed += instance.OnPause;
                 @Pause.canceled += instance.OnPause;
-                @Submit.started += instance.OnSubmit;
-                @Submit.performed += instance.OnSubmit;
-                @Submit.canceled += instance.OnSubmit;
+                @Confirm.started += instance.OnConfirm;
+                @Confirm.performed += instance.OnConfirm;
+                @Confirm.canceled += instance.OnConfirm;
                 @Cancel.started += instance.OnCancel;
                 @Cancel.performed += instance.OnCancel;
                 @Cancel.canceled += instance.OnCancel;
@@ -562,7 +562,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
     public EditableControlsActions @EditableControls => new EditableControlsActions(this);
     public interface IEditableControlsActions
     {
-        void OnMovement(InputAction.CallbackContext context);
+        void OnMove(InputAction.CallbackContext context);
         void OnLookMovement(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnPunch(InputAction.CallbackContext context);
@@ -570,7 +570,7 @@ public partial class @_Controls : IInputActionCollection2, IDisposable
         void OnCharge(InputAction.CallbackContext context);
         void OnCrouch(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);
-        void OnSubmit(InputAction.CallbackContext context);
+        void OnConfirm(InputAction.CallbackContext context);
         void OnCancel(InputAction.CallbackContext context);
     }
 }

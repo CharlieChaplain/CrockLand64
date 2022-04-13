@@ -5,6 +5,7 @@ using UnityEngine;
 public class ControlsCursor : MenuCursor
 {
     ControlsMenu parentMenu;
+    Vector2 posAtStart;
 
     // Start is called before the first frame update
     void Start()
@@ -12,22 +13,24 @@ public class ControlsCursor : MenuCursor
         rectTransform = GetComponent<RectTransform>();
         parentMenu = GetComponentInParent<ControlsMenu>();
         PosAtZeroY = new Vector2(rectTransform.localPosition.x, 0);
+        posAtStart = rectTransform.anchoredPosition;
 
         ResetMenu();
     }
 
     public override void ResetMenu()
     {
-        //base.ResetMenu();
+        rectTransform.anchoredPosition = posAtStart;
+        currentOption = 0;
     }
 
     //moves the cursor down one option
     public override void MoveDown()
     {
-        if (currentOption >= 7)
+        if (currentOption >= numOptions - 2)
         {
         }
-        else if (currentOption == 6) //handles moving the cursor down and over for the final option
+        else if (currentOption == numOptions - 3) //handles moving the cursor down and over for the final option
         {
             currentOption++;
             StopCoroutine("MoveCursor");
@@ -49,7 +52,7 @@ public class ControlsCursor : MenuCursor
         if (currentOption <= 0)
         {
         }
-        else if (currentOption == 8)
+        else if (currentOption == numOptions - 1)
         {
             currentOption -= 2;
             StopCoroutine("MoveCursor");
@@ -67,7 +70,7 @@ public class ControlsCursor : MenuCursor
 
     public void MoveLeft()
     {
-        if(currentOption == 8)
+        if(currentOption == numOptions - 1)
         {
             currentOption--;
             StopCoroutine("MoveCursor");
@@ -78,7 +81,7 @@ public class ControlsCursor : MenuCursor
 
     public void MoveRight()
     {
-        if (currentOption == 7)
+        if (currentOption == numOptions - 2)
         {
             currentOption++;
             StopCoroutine("MoveCursor");

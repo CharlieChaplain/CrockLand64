@@ -110,11 +110,11 @@ public class PlayerMove : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
 
-        controls = InputManager.Instance.controls;
+        controls = InputManager.controls;
 
         // player subscriptions--------------------------------------------------
-        controls.EditableControls.Movement.performed += OnMoveListener;
-        controls.EditableControls.Movement.canceled += OnMoveListener;
+        controls.EditableControls.Move.performed += OnMoveListener;
+        controls.EditableControls.Move.canceled += OnMoveListener;
 
         controls.EditableControls.Jump.started += OnJumpListener;
         controls.EditableControls.Jump.canceled += OnJumpListener;

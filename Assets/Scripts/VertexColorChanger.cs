@@ -29,7 +29,7 @@ public class VertexColorChanger : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
 
-        controls = InputManager.Instance.controls;
+        controls = InputManager.controls;
 
         // Input subscriptions----------------------------------------------
         controls.EditableControls.PunchHeld.performed += OnPunchHold;

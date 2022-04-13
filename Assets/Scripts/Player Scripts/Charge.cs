@@ -36,7 +36,7 @@ public class Charge : MonoBehaviour
 
     private void Awake()
     {
-        controls = InputManager.Instance.controls;
+        controls = InputManager.controls;
     }
 
     private void OnEnable()
@@ -47,7 +47,7 @@ public class Charge : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
 
-        controls = InputManager.Instance.controls;
+        controls = InputManager.controls;
 
         // player subscriptions--------------------------------------------------
         controls.EditableControls.Charge.started += StartCharge;

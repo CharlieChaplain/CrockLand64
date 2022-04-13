@@ -46,7 +46,7 @@ public class DialogueManager : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
 
-        controls = InputManager.Instance.controls;
+        controls = InputManager.controls;
 
         // Input subscriptions--------------------------------------------------
         controls.EditableControls.Punch.started += PunchListener;

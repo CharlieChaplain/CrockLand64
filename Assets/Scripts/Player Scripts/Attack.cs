@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -46,7 +47,7 @@ public class Attack : MonoBehaviour
 
     private void Awake()
     {
-        controls = InputManager.Instance.controls;
+        controls = InputManager.controls;
     }
 
     private void OnEnable()
@@ -57,13 +58,17 @@ public class Attack : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
 
-        controls = InputManager.Instance.controls;
+        controls = InputManager.controls;
 
         // player subscriptions--------------------------------------------------
         controls.EditableControls.Punch.started += AttackLogic;
         controls.EditableControls.Punch.canceled += AttackLogic;
         controls.EditableControls.Crouch.performed += AttackLogicGroundPound;
+
+        controls.EditableControls.PunchHeld.performed += PunchHeld;
     }
+
+    
 
     // Start is called before the first frame update
     void Start()
@@ -151,6 +156,11 @@ public class Attack : MonoBehaviour
             //GroundPound
             GroundPound();
         }
+    }
+
+    private void PunchHeld(InputAction.CallbackContext obj)
+    {
+        //Debug.Log("held");
     }
 
     public void Punch()

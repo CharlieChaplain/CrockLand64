@@ -28,7 +28,7 @@ public class Pause : MonoBehaviour
 
     private void Awake()
     {
-        controls = InputManager.Instance.controls;
+        controls = InputManager.controls;
     }
 
     private void OnEnable()
@@ -39,13 +39,13 @@ public class Pause : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
 
-        controls = InputManager.Instance.controls;
+        controls = InputManager.controls;
 
         // UI subscriptions------------------------------------------------------
-        controls.EditableControls.Movement.performed += PauseCursorMovement;
-        controls.EditableControls.Movement.canceled += PauseCursorMovement;
+        controls.EditableControls.Move.performed += PauseCursorMovement;
+        controls.EditableControls.Move.canceled += PauseCursorMovement;
         controls.EditableControls.Pause.started += PauseListener;
-        controls.EditableControls.Submit.started += PauseConfirm;
+        controls.EditableControls.Confirm.started += PauseConfirm;
         controls.EditableControls.Cancel.started += PauseCancel;
     }
     // Start is called before the first frame update

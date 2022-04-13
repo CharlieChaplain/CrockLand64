@@ -22,7 +22,7 @@ public class LadderClimb : MonoBehaviour
 
     private void Awake()
     {
-        controls = InputManager.Instance.controls;
+        controls = InputManager.controls;
     }
     private void OnEnable()
     {
@@ -32,11 +32,11 @@ public class LadderClimb : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
 
-        controls = InputManager.Instance.controls;
+        controls = InputManager.controls;
 
         // player subscriptions--------------------------------------------------
-        controls.EditableControls.Movement.performed += OnMoveListener;
-        controls.EditableControls.Movement.canceled += OnMoveListener;
+        controls.EditableControls.Move.performed += OnMoveListener;
+        controls.EditableControls.Move.canceled += OnMoveListener;
     }
 
     // Start is called before the first frame update
